@@ -20,6 +20,9 @@
 # production
 /build
 
+# backend gitignore file
+/backend/node_modules
+
 # misc
 .DS_Store
 *.pem
