@@ -1,3 +1,5 @@
+"use client"
+
 import CadenaMainContent from "@/components/CadenaMainContent"
 
 //redo the ui of the etherium explorer to have all of that in there
