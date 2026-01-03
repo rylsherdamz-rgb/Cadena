@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+i
+import { WagmiProvider } from "wagmi";
 import Navigation from "@/components/Navigation";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,8 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <WagmiProvider config={}>
+
         <Navigation />
         {children}
+
+        </WagmiProvider>
       </body>
     </html>
   );
