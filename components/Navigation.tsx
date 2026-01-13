@@ -14,7 +14,7 @@ export default function Navigation() {
     .replace(/\s+/g, "-")     // spaces → dashes
     .replace(/[^a-z0-9-]/g, ""); // remove symbols
     
-    const NavigationItems = ["Rock Game", "Blockchain", "About Us"  ]
+    const NavigationItems = ["Rock Game", "Blockchain App", "Cadena", "About Us"]
     return <div className="w-full h-[10vh] flex bg-white flex-row justify-between gap-x-5 px-10 py-6">
         <div className="flex flex-row text-black gap-x-2"               >
             <Badge size={24} color="#000" />
