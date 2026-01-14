@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useAccount } from "wagmi"
 import { useMessagingContract, useUserConversations, useUnreadCount } from "@/utils/useMessagingContract"
 import { Send, MessageCircle, Loader } from "lucide-react"

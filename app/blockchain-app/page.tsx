@@ -9,7 +9,7 @@ import BudgetDashboardComponent from "@/components/BudgetDashboardComponent"
 export default function BlockchainAppPage() {
   const [activeSection, setActiveSection] = useState<"voting" | "rps" | "messaging" | "budget">("voting")
 
-  const sections = [
+  const sections: Array<{ id: "voting" | "rps" | "messaging" | "budget"; label: string; icon: string }> = [
     { id: "voting", label: "🗳️ Voting", icon: "🗳️" },
     { id: "rps", label: "🎮 Gaming", icon: "🎮" },
     { id: "messaging", label: "💬 Messaging", icon: "💬" },
@@ -30,7 +30,7 @@ export default function BlockchainAppPage() {
           {sections.map((section) => (
             <button
               key={section.id}
-              onClick={() => setActiveSection(section.id as any)}
+              onClick={() => setActiveSection(section.id)}
               className={`py-4 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 ${
                 activeSection === section.id
                   ? "bg-white text-blue-600 shadow-lg"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useAccount } from "wagmi"
 import { useRPSContract, useRPSGameDetails, usePlayerGames } from "@/utils/useRPSContract"
 import { RPSGameType, RPSChoice, CHOICE_NAMES } from "@/app/constants/rpsContract"

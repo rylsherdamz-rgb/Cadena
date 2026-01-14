@@ -15,16 +15,11 @@ export function Providers({ children }: { children: ReactNode }) {
   const config = getDefaultConfig({
     appName: "Cadena",
     projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
-    chains: [sepolia, tenderlyTestnet],
+    chains: [ tenderlyTestnet],
     ssr: true,
     // Important: define transports for *every* chain you pass in `chains`
     transports: {
-      // Sepolia – use your own RPC URL (recommended: Infura/Alchemy)
-      [sepolia.id]: http(
-        process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL ??
-          "https://sepolia.infura.io/v3/YOUR_INFURA_KEY"
-      ),
-      // Custom Tenderly testnet
+      
       [tenderlyTestnet.id]: http(
         "https://virtual.mainnet.eu.rpc.tenderly.co/9cfed6ae-cf6a-43df-ab28-28e771c513da"
       ),

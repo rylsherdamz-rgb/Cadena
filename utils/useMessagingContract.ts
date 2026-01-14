@@ -1,95 +1,68 @@
 "use client"
 
 import { useReadContract, useWriteContract } from "wagmi"
-import { BUDGET_CONTRACT_ABI, BUDGET_CONTRACT_ADDRESS } from "@/app/constants/budgetContract"
+import { MESSAGING_CONTRACT_ABI, MESSAGING_CONTRACT_ADDRESS } from "@/app/constants/messagingContract"
 
-export function useBudgetContract() {
+export function useMessagingContract() {
   const { writeContract, isPending } = useWriteContract()
 
-  const createAllocation = (
-    category: number,
-    projectName: string,
-    description: string,
-    projectLead: string,
-    amount: bigint,
-    targetDate: number,
-    docHash: string
-  ) => {
+  const sendMessage = (recipient: string, content: string) => {
     return writeContract({
-      address: (BUDGET_CONTRACT_ADDRESS as `0x${string}`) || undefined,
-      abi: BUDGET_CONTRACT_ABI,
-      functionName: "createAllocation",
-      args: [category, projectName, description, projectLead as `0x${string}`, amount, targetDate, docHash],
+      address: (MESSAGING_CONTRACT_ADDRESS as `0x${string}`) || undefined,
+      abi: MESSAGING_CONTRACT_ABI,
+      functionName: "sendMessage",
+      args: [(recipient as `0x${string}`), content],
     })
   }
 
-  const approveAllocation = (allocationId: number) => {
+  const markAsRead = (messageId: number) => {
     return writeContract({
-      address: (BUDGET_CONTRACT_ADDRESS as `0x${string}`) || undefined,
-      abi: BUDGET_CONTRACT_ABI,
-      functionName: "approveAllocation",
-      args: [BigInt(allocationId)],
-    })
-  }
-
-  const disburseAllocation = (allocationId: number, amount: bigint) => {
-    return writeContract({
-      address: (BUDGET_CONTRACT_ADDRESS as `0x${string}`) || undefined,
-      abi: BUDGET_CONTRACT_ABI,
-      functionName: "disburseAllocation",
-      args: [BigInt(allocationId), amount],
-    })
-  }
-
-  const recordExpense = (
-    allocationId: number,
-    vendor: string,
-    amount: bigint,
-    description: string,
-    receiptHash: string
-  ) => {
-    return writeContract({
-      address: (BUDGET_CONTRACT_ADDRESS as `0x${string}`) || undefined,
-      abi: BUDGET_CONTRACT_ABI,
-      functionName: "recordExpense",
-      args: [BigInt(allocationId), vendor as `0x${string}`, amount, description, receiptHash],
+      address: (MESSAGING_CONTRACT_ADDRESS as `0x${string}`) || undefined,
+      abi: MESSAGING_CONTRACT_ABI,
+      functionName: "markAsRead",
+      args: [BigInt(messageId)],
     })
   }
 
   return {
-    createAllocation,
-    approveAllocation,
-    disburseAllocation,
-    recordExpense,
+    sendMessage,
+    markAsRead,
     isPending,
   }
 }
 
-export function useBudgetStatus() {
-  const { data: status, isLoading } = useReadContract({
-    address: (BUDGET_CONTRACT_ADDRESS as `0x${string}`) || undefined,
-    abi: BUDGET_CONTRACT_ABI,
-    functionName: "getBudgetStatus",
+export function useUserConversations(userAddress: string) {
+  const { data: conversationIds, isLoading } = useReadContract({
+    address: (MESSAGING_CONTRACT_ADDRESS as `0x${string}`) || undefined,
+    abi: MESSAGING_CONTRACT_ABI,
+    functionName: "getUserConversations",
+    args: [(userAddress as `0x${string}`) || "0x0"],
+    query: { enabled: !!userAddress },
   })
 
-  return {
-    total: status ? status[0] : 0n,
-    allocated: status ? status[1] : 0n,
-    disbursed: status ? status[2] : 0n,
-    spent: status ? status[3] : 0n,
-    available: status ? status[4] : 0n,
-    isLoading,
-  }
+  return { conversationIds: conversationIds || [], isLoading }
 }
 
-export function useAllocation(allocationId: number) {
-  const { data: allocation, isLoading } = useReadContract({
-    address: (BUDGET_CONTRACT_ADDRESS as `0x${string}`) || undefined,
-    abi: BUDGET_CONTRACT_ABI,
-    functionName: "getAllocation",
-    args: [BigInt(allocationId)],
-    query: { enabled: allocationId > 0 },
+export function useConversation(conversationId: number) {
+  const { data: conversation, isLoading } = useReadContract({
+    address: (MESSAGING_CONTRACT_ADDRESS as `0x${string}`) || undefined,
+    abi: MESSAGING_CONTRACT_ABI,
+    functionName: "getConversation",
+    args: [BigInt(conversationId)],
+    query: { enabled: conversationId > 0 },
   })
 
-  return { allocation, isLoading }
+  return { conversation, isLoading }
+}
+
+export function useUnreadCount(userAddress: string) {
+  const { data: unreadCount, isLoading } = useReadContract({
+    address: (MESSAGING_CONTRACT_ADDRESS as `0x${string}`) || undefined,
+    abi: MESSAGING_CONTRACT_ABI,
+    functionName: "getUnreadCount",
+    args: [(userAddress as `0x${string}`) || "0x0"],
+    query: { enabled: !!userAddress },
+  })
+
+  return { unreadCount: unreadCount ? Number(unreadCount) : 0, isLoading }
 }

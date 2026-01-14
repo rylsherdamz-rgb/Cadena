@@ -1,6 +1,6 @@
 "use client"
 
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi"
+import { useReadContract, useWriteContract } from "wagmi"
 import { RPS_CONTRACT_ABI, RPS_CONTRACT_ADDRESS, RPSChoice, RPSGameType } from "@/app/constants/rpsContract"
 
 export function useRPSContract() {

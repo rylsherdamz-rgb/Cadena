@@ -2,14 +2,14 @@
 
 import { useState } from "react"
 import { useAccount } from "wagmi"
-import { useBudgetContract, useBudgetStatus } from "@/utils/useMessagingContract"
-import { CATEGORY_NAMES, STATUS_NAMES, BudgetCategory, AllocationStatus } from "@/app/constants/budgetContract"
+import { useBudgetContract, useBudgetStatus } from "@/utils/useBudgetContract"
+import { CATEGORY_NAMES, BudgetCategory } from "@/app/constants/budgetContract"
 import { BarChart3, TrendingUp, DollarSign, Loader } from "lucide-react"
 import { formatEther } from "viem"
 
 export default function BudgetDashboardComponent() {
   const { isConnected, address } = useAccount()
-  const { createAllocation, approveAllocation, disburseAllocation, isPending } = useBudgetContract()
+  const { createAllocation, isPending } = useBudgetContract()
   const { total, allocated, disbursed, spent, available, isLoading } = useBudgetStatus()
 
   const [activeTab, setActiveTab] = useState<"overview" | "create" | "track">("overview")
@@ -257,7 +257,7 @@ export default function BudgetDashboardComponent() {
 
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
             <p className="text-sm text-blue-800">
-              📊 <strong>Transparency Note:</strong> This budget system follows principles of full transparency and accountability, inspired by Bam Aquino's vision for public fund management. All allocations, expenditures, and audits are recorded on-chain for public verification.
+              📊 <strong>Transparency Note:</strong> This budget system follows principles of full transparency and accountability, inspired by Bam Aquino&apos;s vision for public fund management. All allocations, expenditures, and audits are recorded on-chain for public verification.
             </p>
           </div>
         </div>

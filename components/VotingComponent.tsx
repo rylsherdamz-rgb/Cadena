@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useAccount, useReadContract } from "wagmi"
-import { useElectionContract, useVote } from "@/utils/useElectionContract"
+import { useVote } from "@/utils/useElectionContract"
 import { ELECTION_CONTRACT_ABI, ELECTION_CONTRACT_ADDRESS } from "@/app/constants/electionContract"
 import { CheckCircle, Loader } from "lucide-react"
 
@@ -12,7 +12,7 @@ interface VotingComponentProps {
 
 export default function VotingComponent({ contractAddress = ELECTION_CONTRACT_ADDRESS }: VotingComponentProps) {
   const { isConnected, address } = useAccount()
-  const [candidates, setCandidates] = useState<any[]>([])
+  const [candidates, setCandidates] = useState<Array<{ id: number; name: string; party: string; voteCount: number }>>([])
   const [loading, setLoading] = useState(true)
   const [voted, setVoted] = useState(false)
   const { vote, isPending } = useVote()

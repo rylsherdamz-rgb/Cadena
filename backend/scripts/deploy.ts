@@ -1,21 +1,42 @@
 import hre from "hardhat";
 
 async function main() {
-  console.log("Deploying Election contract...");
+  const { ethers, network } = hre;
 
-  const election = await hre.ethers.deployContract("Election", []);
+  console.log("====================================");
+  console.log("🚀 Deploying Election contract");
+  console.log("🌐 Network:", network.name);
+  console.log("====================================");
+
+  const [deployer] = await ethers.getSigners();
+
+  console.log("👤 Deployer:", deployer.address);
+  console.log(
+    "💰 Balance:",
+    ethers.formatEther(await deployer.provider.getBalance(deployer.address)),
+    "ETH"
+  );
+
+  const Election = await ethers.getContractFactory("DecentralizedMessaging");
+
+  console.log("⏳ Deploying...");
+  const election = await Election.deploy();
 
   await election.waitForDeployment();
 
-  const deployedAddress = await election.getAddress();
-  console.log("Election contract deployed to:", deployedAddress);
+  const address = await election.getAddress();
 
-  // Save the address to a file or display it
-  console.log("\nAdd this to your .env.local file:");
-  console.log(`NEXT_PUBLIC_ELECTION_CONTRACT_ADDRESS=${deployedAddress}`);
+  console.log("====================================");
+  console.log("✅ Election deployed successfully");
+  console.log("📄 Contract address:", address);
+  console.log("====================================\n");
+
+  console.log("👉 Add this to your .env / .env.local:");
+  console.log(`NEXT_PUBLIC_MESSAGING_CONTRACT_ADDRESS=${address}`);
 }
 
 main().catch((error) => {
+  console.error("❌ Deployment failed:");
   console.error(error);
   process.exitCode = 1;
 });

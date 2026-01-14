@@ -9,7 +9,6 @@ export default function CadenaMainContent() {
             <TopHeaderCadenaComponent />
         </div>
         <div className="px-5 py-4 border-t border-gray-200">
-            <VotingComponent />
         </div>
     </div>
 }

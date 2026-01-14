@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi"
+import { useReadContract, useWriteContract } from "wagmi"
 import { ELECTION_CONTRACT_ABI, ELECTION_CONTRACT_ADDRESS } from "@/app/constants/electionContract"
 
 export interface Candidate {
@@ -14,7 +14,6 @@ export interface Candidate {
 export function useElectionContract() {
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [loading, setLoading] = useState(false)
-  const [hasVoted, setHasVoted] = useState(false)
 
   // Read candidates count
   const { data: candidatesCount } = useReadContract({
