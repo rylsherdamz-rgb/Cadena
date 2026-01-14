@@ -17,7 +17,7 @@ async function main() {
     "ETH"
   );
 
-  const Election = await ethers.getContractFactory("DecentralizedMessaging");
+  const Election = await ethers.getContractFactory("RockPaperScissors");
 
   console.log("⏳ Deploying...");
   const election = await Election.deploy();
@@ -32,7 +32,7 @@ async function main() {
   console.log("====================================\n");
 
   console.log("👉 Add this to your .env / .env.local:");
-  console.log(`NEXT_PUBLIC_MESSAGING_CONTRACT_ADDRESS=${address}`);
+  console.log(`NEXT_PUBLIC_ROCK_CONTRACT_ADDRESS=${address}`);
 }
 
 main().catch((error) => {

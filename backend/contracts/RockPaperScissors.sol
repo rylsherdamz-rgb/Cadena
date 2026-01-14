@@ -3,8 +3,14 @@ pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 contract RockPaperScissors is ReentrancyGuard, Ownable {
+    using Address for address payable;
+
+    uint256 public creatorFee = 25;
+    uint256 private nextGameId = 1;
+
     enum Choice { None, Rock, Paper, Scissors }
     enum GameType { OneRound, BestOfThree, BestOfFive }
 
@@ -15,37 +21,42 @@ contract RockPaperScissors is ReentrancyGuard, Ownable {
         GameType gameType;
         uint8 roundsPlayed;
         uint8[2] scores;
+        Choice[2] choices;
         bool isActive;
-        address winner;
-        uint256 totalPot;
-        uint256 createdAt;
+        address lastPlayerMove;
+        Choice[] player1Moves; 
+        Choice[] player2Moves;
     }
 
-    uint256 public nextGameId = 1;
-    uint256 public platformFee = 25; // 2.5% = 25/1000
-    uint256 public platformBalance;
+    struct GameView {
+        uint256 gameId;
+        address[2] players;
+        uint256 stake;
+        uint8 gameType;      
+        uint8 roundsPlayed;
+        uint8[2] scores;
+        uint8[2] choices;
+        bool isActive;
+        address lastPlayerMove;
+        Choice[] player1Moves;
+        Choice[] player2Moves;
+    }
 
     mapping(uint256 => Game) public games;
-    mapping(address => uint256[]) public playerGames;
-    mapping(uint256 => mapping(address => Choice)) public lastMoves;
+    mapping(address => uint256[]) public userGames;
 
-    event GameCreated(uint256 indexed gameId, address indexed player1, uint256 stake, GameType gameType);
-    event GameJoined(uint256 indexed gameId, address indexed player2);
-    event MoveSubmitted(uint256 indexed gameId, address indexed player, Choice choice);
-    event RoundResult(uint256 indexed gameId, uint8 round, address winner, Choice choice1, Choice choice2);
-    event GameFinished(uint256 indexed gameId, address indexed winner, uint256 payout);
-    event FeeWithdrawn(address indexed owner, uint256 amount);
+    event GameCreated(uint256 indexed gameId, address player1, uint256 stake, GameType gameType);
+    event GameJoined(uint256 indexed gameId, address player2);
+    event RoundPlayed(uint256 indexed gameId, uint8 roundNumber, Choice player1Choice, Choice player2Choice);
+    event GameEnded(uint256 indexed gameId, address winner, uint256 payout);
+    event PlayerMoved(uint256 indexed gameId, address player, Choice choice);
 
-    modifier gameExists(uint256 _gameId) {
-        require(_gameId > 0 && _gameId < nextGameId, "Game does not exist");
-        _;
+    constructor() Ownable(msg.sender) {
+        transferOwnership(msg.sender);
     }
-
-    constructor() Ownable(msg.sender) {}
 
     function createGame(GameType _gameType) external payable returns (uint256) {
         require(msg.value > 0, "Stake must be greater than 0");
-        require(_gameType <= GameType.BestOfFive, "Invalid game type");
 
         uint256 gameId = nextGameId++;
         games[gameId] = Game({
@@ -55,136 +66,169 @@ contract RockPaperScissors is ReentrancyGuard, Ownable {
             gameType: _gameType,
             roundsPlayed: 0,
             scores: [0, 0],
+            choices: [Choice.None, Choice.None],
             isActive: true,
-            winner: address(0),
-            totalPot: msg.value,
-            createdAt: block.timestamp
+            lastPlayerMove: address(0),
+            player1Moves: new Choice[](0) ,
+            player2Moves: new Choice[](0) 
         });
 
-        playerGames[msg.sender].push(gameId);
-        emit GameCreated(gameId, msg.sender, msg.value, _gameType);
+        userGames[msg.sender].push(gameId);
 
+        emit GameCreated(gameId, msg.sender, msg.value, _gameType);
         return gameId;
     }
 
-    function joinGame(uint256 _gameId) external payable gameExists(_gameId) {
+    function joinGame(uint256 _gameId) external payable {
         Game storage game = games[_gameId];
-
         require(game.isActive, "Game is not active");
         require(game.players[1] == address(0), "Game is full");
-        require(game.players[0] != msg.sender, "Cannot play against yourself");
+        require(game.players[0] != msg.sender, "Already in game");
         require(msg.value == game.stake, "Incorrect stake amount");
 
         game.players[1] = msg.sender;
-        game.totalPot += msg.value;
-        playerGames[msg.sender].push(_gameId);
-
+        userGames[msg.sender].push(_gameId);
         emit GameJoined(_gameId, msg.sender);
     }
 
-    function submitMove(uint256 _gameId, Choice _choice) external gameExists(_gameId) {
+    function makeMove(uint256 _gameId, Choice _choice) external {
         Game storage game = games[_gameId];
-
         require(game.isActive, "Game is not active");
-        require(game.players[1] != address(0), "Waiting for opponent");
-        require(
-            msg.sender == game.players[0] || msg.sender == game.players[1],
-            "Not a player in this game"
-        );
         require(_choice == Choice.Rock || _choice == Choice.Paper || _choice == Choice.Scissors, "Invalid choice");
-        require(lastMoves[_gameId][game.players[0]] == Choice.None || lastMoves[_gameId][game.players[1]] == Choice.None, "Both players already moved");
+        require(game.lastPlayerMove != msg.sender, "Cannot make two moves in a row");
 
-        lastMoves[_gameId][msg.sender] = _choice;
-        emit MoveSubmitted(_gameId, msg.sender, _choice);
+        uint8 playerIndex = game.players[0] == msg.sender ? 0 : 1;
+        require(game.players[playerIndex] == msg.sender, "Not a player in this game");
+        require(game.choices[playerIndex] == Choice.None, "Choice already made");
 
-        // If both players have moved, resolve the round
-        if (lastMoves[_gameId][game.players[0]] != Choice.None && lastMoves[_gameId][game.players[1]] != Choice.None) {
+        game.choices[playerIndex] = _choice;
+        game.lastPlayerMove = msg.sender;
+
+        if (playerIndex == 0) {
+            game.player1Moves.push(_choice);
+        } else {
+            game.player2Moves.push(_choice);
+        }
+
+        emit PlayerMoved(_gameId, msg.sender, _choice);
+
+        if (game.choices[0] != Choice.None && game.choices[1] != Choice.None) {
             _resolveRound(_gameId);
         }
     }
 
     function _resolveRound(uint256 _gameId) private {
         Game storage game = games[_gameId];
+        Choice player1Choice = game.choices[0];
+        Choice player2Choice = game.choices[1];
 
-        Choice choice1 = lastMoves[_gameId][game.players[0]];
-        Choice choice2 = lastMoves[_gameId][game.players[1]];
+        emit RoundPlayed(_gameId, game.roundsPlayed + 1, player1Choice, player2Choice);
 
-        uint8 roundsNeeded = _getRoundsNeeded(game.gameType);
-
-        if (choice1 == choice2) {
-            // Draw - reset for next round
-        } else if (_isWinning(choice1, choice2)) {
+        if (player1Choice == player2Choice) {
+            // Tie, no points awarded
+        } else if (
+            (player1Choice == Choice.Rock && player2Choice == Choice.Scissors) ||
+            (player1Choice == Choice.Paper && player2Choice == Choice.Rock) ||
+            (player1Choice == Choice.Scissors && player2Choice == Choice.Paper)
+        ) {
             game.scores[0]++;
         } else {
             game.scores[1]++;
         }
 
         game.roundsPlayed++;
+        game.choices = [Choice.None, Choice.None];  // Reset choices for next round
+        game.lastPlayerMove = address(0);
 
-        emit RoundResult(_gameId, game.roundsPlayed, 
-            game.scores[0] > game.scores[1] ? game.players[0] : game.players[1],
-            choice1, choice2);
-
-        // Check if game is finished
-        if (game.scores[0] > roundsNeeded / 2 || game.scores[1] > roundsNeeded / 2) {
-            _finishGame(_gameId);
-        } else {
-            // Reset choices for next round
-            lastMoves[_gameId][game.players[0]] = Choice.None;
-            lastMoves[_gameId][game.players[1]] = Choice.None;
+        if (_isGameOver(game)) {
+            _endGame(_gameId);
         }
     }
 
-    function _isWinning(Choice a, Choice b) private pure returns (bool) {
-        return (a == Choice.Rock && b == Choice.Scissors) ||
-               (a == Choice.Scissors && b == Choice.Paper) ||
-               (a == Choice.Paper && b == Choice.Rock);
+function getGameById(uint256 _id) public view returns (Game memory){
+        return games[_id];
     }
 
-    function _getRoundsNeeded(GameType gameType) private pure returns (uint8) {
-        if (gameType == GameType.OneRound) return 1;
-        if (gameType == GameType.BestOfThree) return 3;
-        return 5; // BestOfFive
+
+    function getUserGames(address _user) external view returns (uint256[] memory) {
+        return userGames[_user];
     }
 
-    function _finishGame(uint256 _gameId) private nonReentrant {
+
+    function getGamesInfo(uint256[] calldata gameIds) external view returns (GameView[] memory) {
+        GameView[] memory gameViews = new GameView[](gameIds.length);
+
+        for (uint256 i = 0; i < gameIds.length; i++) {
+            Game storage game = games[gameIds[i]];
+
+            // Convert enum arrays to uint8 arrays for external visibility
+            uint8[2] memory choicesArray;
+            choicesArray[0] = uint8(game.choices[0]);
+            choicesArray[1] = uint8(game.choices[1]);
+
+            gameViews[i] = GameView({
+                gameId: gameIds[i],
+                players: game.players,
+                stake: game.stake,
+                gameType: uint8(game.gameType),
+                roundsPlayed: game.roundsPlayed,
+                scores: game.scores,
+                choices: choicesArray,
+                isActive: game.isActive,
+                lastPlayerMove: game.lastPlayerMove,
+                player1Moves: game.player1Moves,
+                player2Moves: game.player2Moves 
+            });
+        }
+
+        return gameViews;
+    }
+
+    function getPlayerMoves(uint256 _gameId, address player) external view returns (Choice[] memory) {
         Game storage game = games[_gameId];
+        require(game.players[0] == player || game.players[1] == player, "Player not in this game");
+
+        if (game.players[0] == player) {
+            return game.player1Moves;
+        } else {
+            return game.player2Moves;
+        }
+    }
+
+    function _isGameOver(Game storage game) private view returns (bool) {
+        if (game.gameType == GameType.OneRound) {
+            return game.roundsPlayed == 1;
+        } else if (game.gameType == GameType.BestOfThree) {
+            return game.scores[0] == 2 || game.scores[1] == 2;
+        } else {  
+            return game.scores[0] == 3 || game.scores[1] == 3;
+        }
+    }
+
+    function _endGame(uint256 _gameId) private nonReentrant {
+        Game storage game = games[_gameId];
+        address winner;
+        uint256 payout;
+
+        if (game.scores[0] > game.scores[1]) {
+            winner = game.players[0];
+        } else if (game.scores[1] > game.scores[0]) {
+            winner = game.players[1];
+        } else {
+            // Tie, return stakes to both players
+            payable(game.players[0]).sendValue(game.stake);
+            payable(game.players[1]).sendValue(game.stake);
+            game.isActive = false;
+            emit GameEnded(_gameId, address(0), 0);
+            return;
+        }
+
+        payout = (game.stake * 2 * (10000 - creatorFee)) / 10000;
+        uint256 fee = (game.stake * 2) - payout;
+        payable(winner).sendValue(payout);
+        payable(owner()).sendValue(fee);
 
         game.isActive = false;
-
-        address winner = game.scores[0] > game.scores[1] ? game.players[0] : game.players[1];
-        game.winner = winner;
-
-        uint256 fee = (game.totalPot * platformFee) / 1000;
-        uint256 payout = game.totalPot - fee;
-
-        platformBalance += fee;
-
-        (bool success, ) = payable(winner).call{ value: payout }("");
-        require(success, "Payout failed");
-
-        emit GameFinished(_gameId, winner, payout);
-    }
-
-    function withdrawPlatformFee() external onlyOwner nonReentrant {
-        uint256 amount = platformBalance;
-        platformBalance = 0;
-
-        (bool success, ) = payable(owner()).call{ value: amount }("");
-        require(success, "Withdrawal failed");
-
-        emit FeeWithdrawn(owner(), amount);
-    }
-
-    function getGame(uint256 _gameId) external view gameExists(_gameId) returns (Game memory) {
-        return games[_gameId];
-    }
-
-    function getPlayerGames(address _player) external view returns (uint256[] memory) {
-        return playerGames[_player];
-    }
-
-    function getLastMove(uint256 _gameId, address _player) external view gameExists(_gameId) returns (Choice) {
-        return lastMoves[_gameId][_player];
+        emit GameEnded(_gameId, winner, payout);
     }
 }

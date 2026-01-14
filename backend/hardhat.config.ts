@@ -24,11 +24,19 @@ const config: HardhatUserConfig = {
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
     },
     tenderly: {
-      url: "https://virtual.mainnet.eu.rpc.tenderly.co/9cfed6ae-cf6a-43df-ab28-28e771c513da",
+      url: "https://virtual.mainnet.eu.rpc.tenderly.co/5fbac84b-58e8-4f34-8f05-4054d00f711d",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 112901
+      chainId: 154453
     },
+    
   },
-};
+    
+  tenderly : {
+    project: process.env.PROJECT_NAME!,
+    username: process.env.USERNAME!
+  },
+
+  }
+
 
 export default config;
