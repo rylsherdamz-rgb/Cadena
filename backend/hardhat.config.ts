@@ -4,7 +4,6 @@ import "@nomicfoundation/hardhat-ignition-ethers";
 import * as tenderly from "@tenderly/hardhat-tenderly";
 import * as dotenv from "dotenv"
 
-tenderly.setup();
  
 dotenv.config()
 const config: HardhatUserConfig = {
@@ -33,7 +32,8 @@ const config: HardhatUserConfig = {
     
   tenderly : {
     project: process.env.PROJECT_NAME!,
-    username: process.env.USERNAME!
+    username: process.env.USERNAME!,
+
   },
 
   }
