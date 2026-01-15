@@ -132,7 +132,7 @@ export default function ReceiptPage() {
   const displayedSenators = showAllSenators ? senators : senators.slice(0, 12);
 
   return (
-    <div className="max-w-6xl mx-auto py-10 px-4 bg-white text-black min-h-screen">
+    <div className="w-full px-[5%] mx-auto py-10  bg-white text-black min-h-screen">
       <header className="flex justify-between items-center mb-10">
         <h1 className="text-3xl font-bold">✔ Vote Receipt</h1>
         <ConnectButton />
