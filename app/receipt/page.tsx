@@ -1,10 +1,17 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import html2canvas from 'html2canvas';
+import { useMemo } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useReadContract, useReadContracts } from 'wagmi';
-import { ElectionContractAddress, ELECTION_ABI } from '../constants/ElectionContract';
+import {
+  useAccount,
+  useReadContract,
+  useReadContracts,
+} from 'wagmi';
+import html2canvas from 'html2canvas';
+import {
+  ElectionContractAddress,
+  ELECTION_ABI,
+} from '../constants/ElectionContract';
 
 type Candidate = {
   id: number;
@@ -15,40 +22,61 @@ type Candidate = {
 };
 
 export default function ReceiptPage() {
-  const params = useSearchParams();
+  const { address, isConnected } = useAccount();
 
-  // SAFELY PARSE PARAMS
-  const senatorIds =
-    params
-      .get('senators')
-      ?.split(',')
-      .map((v) => Number(v))
-      .filter((v) => !Number.isNaN(v)) ?? [];
+  /* ---------------- CHECK IF USER VOTED ---------------- */
+  const { data: hasVoted } = useReadContract({
+    address: ElectionContractAddress,
+    abi: ELECTION_ABI,
+    functionName: 'hasVoted',
+    args: address ? [address] : undefined,
+    watch: true,
+    query: { enabled: !!address },
+  });
 
-  const partyId = Number(params.get('party'));
+  /* ---------------- USER SELECTIONS ---------------- */
+  const { data: votedSenatorIds } = useReadContract({
+    address: ElectionContractAddress,
+    abi: ELECTION_ABI,
+    functionName: 'getVotedSenators',
+    args: address ? [address] : undefined,
+    watch: true,
+    query: { enabled: !!address && !!hasVoted },
+  });
 
-  /* ---------------- GET COUNT ---------------- */
+  const { data: votedPartyId } = useReadContract({
+    address: ElectionContractAddress,
+    abi: ELECTION_ABI,
+    functionName: 'getVotedParty',
+    args: address ? [address] : undefined,
+    watch: true,
+    query: { enabled: !!address && !!hasVoted },
+  });
+
+  /* ---------------- ALL CANDIDATES ---------------- */
   const { data: countData } = useReadContract({
     address: ElectionContractAddress,
     abi: ELECTION_ABI,
     functionName: 'getCandidatesCount',
+    watch: true,
   });
 
   const count = Number(countData ?? 0);
 
-  /* ---------------- GET ALL CANDIDATES ---------------- */
-  const { data } = useReadContracts({
+  const { data: candidatesRaw } = useReadContracts({
     contracts: Array.from({ length: count }, (_, id) => ({
       address: ElectionContractAddress,
       abi: ELECTION_ABI,
       functionName: 'getCandidate',
       args: [id],
     })),
+    watch: true,
     query: { enabled: count > 0 },
   });
 
-  const candidates: Candidate[] =
-    data?.map((r: any, id: number) => {
+  const candidates: Candidate[] = useMemo(() => {
+    if (!candidatesRaw) return [];
+    return candidatesRaw.map((r: any, id: number) => {
       const c = r.result;
       return {
         id,
@@ -57,18 +85,23 @@ export default function ReceiptPage() {
         position: Number(c[2]),
         voteCount: BigInt(c[3]),
       };
-    }) ?? [];
+    });
+  }, [candidatesRaw]);
 
-  /* ---------------- FILTER USER VOTES ---------------- */
+  /* ---------------- USER VOTED CANDIDATES ---------------- */
   const votedSenators = candidates.filter(
-    (c) => c.position === 2 && senatorIds.includes(c.id)
+    (c) =>
+      c.position === 2 &&
+      votedSenatorIds?.includes(BigInt(c.id))
   );
 
   const votedParty = candidates.find(
-    (c) => c.position === 3 && c.id === partyId
+    (c) =>
+      c.position === 3 &&
+      votedPartyId === BigInt(c.id)
   );
 
-  /* ---------------- DOWNLOAD ---------------- */
+  /* ---------------- DOWNLOAD RECEIPT ---------------- */
   const downloadReceipt = async () => {
     const el = document.getElementById('receipt');
     if (!el) return;
@@ -83,41 +116,59 @@ export default function ReceiptPage() {
     link.click();
   };
 
+  /* ---------------- UI STATES ---------------- */
+  if (!isConnected) {
+    return (
+      <div className="p-10 text-center">
+        <ConnectButton />
+      </div>
+    );
+  }
+
+  if (!hasVoted) {
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-semibold">
+          You have not voted yet
+        </h2>
+      </div>
+    );
+  }
+
+  /* ---------------- UI ---------------- */
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4 bg-white text-black min-h-screen">
+    <div className="max-w-6xl mx-auto py-10 px-4 bg-white text-black min-h-screen">
       <header className="flex justify-between items-center mb-10">
-        <h1 className="text-3xl font-bold">✔ Vote Confirmed</h1>
+        <h1 className="text-3xl font-bold">✔ Vote Receipt</h1>
         <ConnectButton />
       </header>
 
-      <div id="receipt" className="border rounded p-6 bg-gray-50 mb-10">
+      {/* -------- RECEIPT -------- */}
+      <div
+        id="receipt"
+        className="border rounded p-6 bg-gray-50 mb-12"
+      >
         <h2 className="text-xl font-semibold mb-4">
-          Your Vote Summary
+          Your Vote
         </h2>
 
         <section className="mb-6">
           <h3 className="font-medium mb-2">Senators</h3>
-          {votedSenators.length === 0 ? (
-            <p>No senators selected</p>
-          ) : (
-            <ul className="list-disc ml-6">
-              {votedSenators.map((s) => (
-                <li key={s.id}>
-                  {s.name} — {s.party}
-                </li>
-              ))}
-            </ul>
-          )}
+          <ul className="list-disc ml-6">
+            {votedSenators.map((s) => (
+              <li key={s.id}>
+                {s.name} — {s.party}
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="mb-6">
           <h3 className="font-medium mb-2">Party-List</h3>
-          {votedParty ? (
+          {votedParty && (
             <p>
               {votedParty.name} — {votedParty.party}
             </p>
-          ) : (
-            <p>No party-list selected</p>
           )}
         </section>
 
@@ -129,23 +180,42 @@ export default function ReceiptPage() {
         </button>
       </div>
 
-      {/* LIVE COUNTS */}
+      {/* -------- LIVE RESULTS (ALL CANDIDATES) -------- */}
       <section>
         <h2 className="text-xl font-semibold mb-4">
           Live Vote Counts
         </h2>
 
         <div className="grid md:grid-cols-2 gap-4">
-          {[...votedSenators, votedParty]
-            .filter(Boolean)
-            .map((c) => (
-              <div key={c!.id} className="border p-4 rounded">
+          {candidates.map((c) => {
+            const isVoted =
+              votedSenatorIds?.includes(BigInt(c.id)) ||
+              votedPartyId === BigInt(c.id);
+
+            return (
+              <div
+                key={c.id}
+                className={`border p-4 rounded ${
+                  isVoted ? 'border-green-600 bg-green-50' : ''
+                }`}
+              >
                 <p className="font-medium">
-                  {c!.name} ({c!.party})
+                  {c.name} ({c.party})
                 </p>
-                <p>Votes: {c!.voteCount.toString()}</p>
+                <p className="text-sm text-gray-600">
+                  Position: {c.position}
+                </p>
+                <p className="mt-1">
+                  Votes: {c.voteCount.toString()}
+                </p>
+                {isVoted && (
+                  <p className="text-green-700 text-sm mt-1">
+                    ✔ You voted for this
+                  </p>
+                )}
               </div>
-            ))}
+            );
+          })}
         </div>
       </section>
     </div>
