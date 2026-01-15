@@ -1,42 +1,90 @@
-import hre from "hardhat";
+import { ethers } from "hardhat";
 
 async function main() {
-  const { ethers, network } = hre;
+  const Election = await ethers.getContractFactory("Election");
 
-  console.log("====================================");
-  console.log("🚀 Deploying Election contract");
-  console.log("🌐 Network:", network.name);
-  console.log("====================================");
+  const names = [
+    "Bong Go",
+    "Bam Aquino",
+    "Bato Dela Rosa",
+    "Erwin Tulfo",
+    "Kiko Pangilinan",
+    "Rodante Marcoleta",
+    "Ping Lacson",
+    "Tito Sotto III",
+    "Pia Cayetano",
+    "Camille Villar",
+    "Lito Lapid",
+    "Imee Marcos",
+    "Benhur Abalos",
+    "Ben Bitag Tulfo",
+    "Ramon Bong Revilla Jr.",
+    "Abby Binay",
+    "Manny Pacquiao",
+    "Phillip Salvador",
+    "Jerome Adonis",
+    "Nars Alyn Andamo",
+    "Wilson Amad",
 
-  const [deployer] = await ethers.getSigners();
+    "4PS Partylist",
+    "Kabataan Partylist",
+    "Duterte Youth Partylist",
+    "PBBM Partylist",
+    "1-Rider Partylist",
+    "United Senior Citizens Partylist",
+    "ACT Teachers Partylist",
+    "Gabriela Partylist",
+    "Magdalo Partylist",
+    "Akbayan Partylist"
+  ];
 
-  console.log("👤 Deployer:", deployer.address);
-  console.log(
-    "💰 Balance:",
-    ethers.formatEther(await deployer.provider.getBalance(deployer.address)),
-    "ETH"
-  );
+  const parties = [
+    // Senate parties
+    "PDPLBN",
+    "KNP",
+    "PDPLBN",
+    "LAKAS",
+    "LP",
+    "IND",
+    "IND",
+    "NPC",
+    "NP",
+    "NP",
+    "NPC",
+    "NP",
+    "PFP",
+    "IND",
+    "LAKAS",
+    "NPC",
+    "PFP",
+    "PDPLBN",
+    "MKBYN",
+    "MKBYN",
+    "IND",
 
-  const Election = await ethers.getContractFactory("RockPaperScissors");
+    // Party-list ballot names
+    "4PS",
+    "Kabataan",
+    "Duterte Youth",
+    "PBBM",
+    "1-RIDER",
+    "United Senior Citizens",
+    "ACT Teachers",
+    "Gabriela",
+    "Magdalo",
+    "Akbayan"
+  ];
 
-  console.log("⏳ Deploying...");
-  const election = await Election.deploy();
+  const positions = [
+    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
 
+    3,3,3,3,3,3,3,3,3,3
+  ];
+
+  const election = await Election.deploy(names, parties, positions);
   await election.waitForDeployment();
 
-  const address = await election.getAddress();
-
-  console.log("====================================");
-  console.log("✅ Election deployed successfully");
-  console.log("📄 Contract address:", address);
-  console.log("====================================\n");
-
-  console.log("👉 Add this to your .env / .env.local:");
-  console.log(`NEXT_PUBLIC_ROCK_CONTRACT_ADDRESS=${address}`);
+  console.log("Election deployed at:", await election.getAddress());
 }
 
-main().catch((error) => {
-  console.error("❌ Deployment failed:");
-  console.error(error);
-  process.exitCode = 1;
-});
+main().catch(console.error);
