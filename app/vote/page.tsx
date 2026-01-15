@@ -102,7 +102,7 @@ export default function OnboardingPage() {
           ))}
 
           <p>Partylist</p>
-          <div>
+          <div className="flex ">
           {partylists.map((c) => (
             <div
               key={c.id}
