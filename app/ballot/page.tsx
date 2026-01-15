@@ -1,171 +1,213 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount, useWriteContract, useReadContract } from "wagmi";
-import { ElectionContractAddress, ELECTION_ABI } from "../../constants/ElectionContract";
-import { encodeFunctionData, decodeFunctionResult } from "viem";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import {
+  useAccount,
+  useReadContract,
+  useReadContracts,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from 'wagmi';
+import { ElectionContractAddress, ELECTION_ABI } from '../constants/ElectionContract';
+import toast from 'react-hot-toast';
 
 type Candidate = {
   id: number;
   name: string;
   party: string;
-  position: number;
+  position: number; // 2 = Senator, 3 = Partylist
   voteCount: bigint;
 };
 
 export default function BallotPage() {
   const { address, isConnected } = useAccount();
-  const router = useRouter();
 
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [selectedSenators, setSelectedSenators] = useState<number[]>([]);
   const [selectedParty, setSelectedParty] = useState<number | null>(null);
 
-  const { writeAsync: voteAsync, isLoading: isVoting } = useWriteContract({
-    mode: "recklesslyUnprepared",
-  });
-
-  const { data: count } = useReadContract({
-    address: ElectionContractAddress as `0x${string}`,
+  /* --------------------------------------------------
+   * 1. CHECK IF USER ALREADY VOTED
+   * -------------------------------------------------- */
+  const { data: hasVoted, isPending: isCheckingVote } = useReadContract({
+    address: ElectionContractAddress,
     abi: ELECTION_ABI,
-    functionName: "getCandidatesCount",
+    functionName: 'hasVoted',
+    args: [address],
+    query: {
+      enabled: !!address,
+    },
   });
 
-  useEffect(() => {
-    if (!count) return;
-    const load = async () => {
-      const arr: Candidate[] = [];
-      for (let i = 0; i < Number(count); i++) {
-        const res = await window.ethereum.request({
-          method: "eth_call",
-          params: [
-            { to: ElectionContractAddress, data: encodeGetCandidate(i) },
-            "latest",
-          ],
-        });
-        const decoded = decodeCandidate(res);
-        arr.push({
-          id: i,
-          name: decoded[0],
-          party: decoded[1],
-          position: Number(decoded[2]),
-          voteCount: BigInt(decoded[3]),
-        });
-      }
-      setCandidates(arr);
-    };
-    load();
-  }, [count]);
+  /* --------------------------------------------------
+   * 2. GET TOTAL CANDIDATES
+   * -------------------------------------------------- */
+  const { data: countData, isPending: isCountPending } = useReadContract({
+    address: ElectionContractAddress,
+    abi: ELECTION_ABI,
+    functionName: 'getCandidatesCount',
+  });
 
-  const toggleSenator = (id: number) => {
-    if (selectedSenators.includes(id)) {
-      setSelectedSenators(selectedSenators.filter((x) => x !== id));
-    } else if (selectedSenators.length < 12) {
-      setSelectedSenators([...selectedSenators, id]);
-    }
-  };
+  const count = Number(countData ?? 0);
 
-  const submitVote = async () => {
-    if (!isConnected) return alert("Connect wallet first");
-    if (!selectedParty) return alert("Select a party-list");
-    if (selectedSenators.length === 0) return alert("Select at least 1 senator");
-
-    await voteAsync({
-      address: ElectionContractAddress as `0x${string}`,
-      abi: ELECTION_ABI,
-      functionName: "vote",
-      args: [selectedSenators, selectedParty],
+  /* --------------------------------------------------
+   * 3. FETCH ALL CANDIDATES (BATCH READ)
+   * -------------------------------------------------- */
+  const { data: candidatesData, isPending: isCandidatesPending } =
+    useReadContracts({
+      contracts: Array.from({ length: count }, (_, id) => ({
+        address: ElectionContractAddress,
+        abi: ELECTION_ABI,
+        functionName: 'getCandidate',
+        args: [id],
+      })),
+      query: {
+        enabled: count > 0,
+      },
     });
 
-    // pass selections to receipt page
-    router.push(
-      `/receipt?senators=${selectedSenators.join(",")}&party=${selectedParty}`
+  const candidates: Candidate[] =
+    candidatesData?.map((res: any, id: number) => {
+      const c = res.result;
+      return {
+        id,
+        name: c[0],
+        party: c[1],
+        position: Number(c[2]),
+        voteCount: BigInt(c[3]),
+      };
+    }) ?? [];
+
+  /* --------------------------------------------------
+   * 4. VOTE TRANSACTION
+   * -------------------------------------------------- */
+  const { data: txData, writeContract } = useWriteContract();
+
+  const { isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash: txData?.hash,
+  });
+
+  const toggleSenator = (id: number) => {
+    if (hasVoted) return;
+
+    setSelectedSenators((prev) =>
+      prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : prev.length < 12
+        ? [...prev, id]
+        : prev
     );
   };
 
-  return (
-    <div className="max-w-5xl mx-auto py-10 px-4 bg-white text-black">
+  const submitVote = async () => {
+    if (!isConnected) return toast.error('Connect wallet first');
+    if (hasVoted) return toast.error('You have already voted');
+    if (selectedParty === null) return toast.error('Select a party-list');
+    if (selectedSenators.length === 0)
+      return toast.error('Select at least 1 senator');
+
+    try {
+      await writeContract({
+        address: ElectionContractAddress,
+        abi: ELECTION_ABI,
+        functionName: 'voteBatch',
+        args: [selectedSenators, selectedParty],
+      });
+
+      toast.success('Vote submitted successfully!');
+    } catch (err: any) {
+      toast.error(err?.shortMessage || err?.message || 'Transaction failed');
+    }
+  };
+
+  /* --------------------------------------------------
+   * 5. LOADING STATE
+   * -------------------------------------------------- */
+    return (
+    <div className="max-w-5xl mx-auto py-10 px-4 bg-white text-black min-h-screen">
       <header className="flex justify-between items-center mb-10">
         <h1 className="text-3xl font-bold">🗳️ Cast Your Vote</h1>
         <ConnectButton />
       </header>
 
+      {hasVoted as boolean && (
+        <div className="mb-6 p-4 rounded bg-gray-200 text-center font-medium">
+          ✅ You have already voted. Thank you!
+        </div>
+      )}
+
+      {/* Senators */}
       <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4">Senators (Select up to 12)</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Senators (Select up to 12)
+        </h2>
         <div className="grid md:grid-cols-2 gap-4">
-          {candidates.filter(c => c.position === 2).map((c) => (
-            <label
-              key={c.id}
-              className={`border p-4 flex justify-between items-center cursor-pointer ${
-                selectedSenators.includes(c.id) ? "bg-black text-white" : ""
-              }`}
-            >
-              <span>
-                <p className="font-medium">{c.name}</p>
-                <p className="text-sm">{c.party}</p>
-              </span>
-              <input
-                type="checkbox"
-                checked={selectedSenators.includes(c.id)}
-                onChange={() => toggleSenator(c.id)}
-                disabled={!selectedSenators.includes(c.id) && selectedSenators.length >= 12}
-              />
-            </label>
-          ))}
+          {candidates
+            .filter((c) => c.position === 2)
+            .map((c) => (
+              <label
+                key={c.id}
+                className={`border p-4 flex justify-between items-center cursor-pointer rounded ${
+                  selectedSenators.includes(c.id)
+                    ? 'bg-black text-white'
+                    : ''
+                } ${hasVoted ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <span>
+                  <p className="font-medium">{c.name}</p>
+                  <p className="text-sm">{c.party}</p>
+                </span>
+                <input
+                  type="checkbox"
+                  disabled={hasVoted}
+                  checked={selectedSenators.includes(c.id)}
+                  onChange={() => toggleSenator(c.id)}
+                />
+              </label>
+            ))}
         </div>
       </section>
 
+      {/* Party-List */}
       <section className="mb-12">
         <h2 className="text-xl font-semibold mb-4">Party-List (Select 1)</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          {candidates.filter(c => c.position === 3).map((c) => (
-            <label
-              key={c.id}
-              className={`border p-4 flex justify-between items-center cursor-pointer ${
-                selectedParty === c.id ? "bg-black text-white" : ""
-              }`}
-            >
-              <span>
-                <p className="font-medium">{c.name}</p>
-                <p className="text-sm">{c.party}</p>
-              </span>
-              <input
-                type="radio"
-                name="party"
-                checked={selectedParty === c.id}
-                onChange={() => setSelectedParty(c.id)}
-              />
-            </label>
-          ))}
+          {candidates
+            .filter((c) => c.position === 3)
+            .map((c) => (
+              <label
+                key={c.id}
+                className={`border p-4 flex justify-between items-center cursor-pointer rounded ${
+                  selectedParty === c.id ? 'bg-black text-white' : ''
+                } ${hasVoted ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <span>
+                  <p className="font-medium">{c.name}</p>
+                  <p className="text-sm">{c.party}</p>
+                </span>
+                <input
+                  type="radio"
+                  name="party"
+                  disabled={hasVoted}
+                  checked={selectedParty === c.id}
+                  onChange={() => setSelectedParty(c.id)}
+                />
+              </label>
+            ))}
         </div>
       </section>
 
       <button
         onClick={submitVote}
-        disabled={isVoting}
+        disabled={hasVoted || (txData && !isConfirmed)}
         className="px-6 py-3 rounded bg-black text-white disabled:bg-gray-400"
       >
-        Submit Vote
+        {hasVoted
+          ? 'You already voted'
+          : txData && !isConfirmed
+          ? 'Submitting...'
+          : 'Submit Vote'}
       </button>
     </div>
   );
-}
-
-/* ---------------- ABI Helpers ---------------- */
-function encodeGetCandidate(id: number) {
-  return encodeFunctionData({
-    abi: ELECTION_ABI,
-    functionName: "getCandidate",
-    args: [BigInt(id)],
-  });
-}
-
-function decodeCandidate(data: `0x${string}`) {
-  return decodeFunctionResult({
-    abi: ELECTION_ABI,
-    functionName: "getCandidate",
-    data,
-  }) as readonly [string, string, number, bigint];
 }
