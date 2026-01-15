@@ -1,8 +1,8 @@
 import { Chain } from "@wagmi/core/chains"
 
 export const tenderlyTestnet: Chain = {
-  id: 112901, // ✅ your custom Tenderly chain ID
-  name: "Cadena (Tenderly Fork)",
+  id: 154453, // ✅ your custom Tenderly chain ID
+  name: "Cadena",
   nativeCurrency: {
     name: "Cadena",
     symbol: "CAD",
@@ -11,12 +11,12 @@ export const tenderlyTestnet: Chain = {
   rpcUrls: {
     default: {
       http: [
-        "https://virtual.mainnet.eu.rpc.tenderly.co/9cfed6ae-cf6a-43df-ab28-28e771c513da",
+        "https://virtual.mainnet.eu.rpc.tenderly.co/5fbac84b-58e8-4f34-8f05-4054d00f711d"
       ],
     },
     public: {
       http: [
-        "https://virtual.mainnet.eu.rpc.tenderly.co/9cfed6ae-cf6a-43df-ab28-28e771c513da",
+        "https://virtual.mainnet.eu.rpc.tenderly.co/5fbac84b-58e8-4f34-8f05-4054d00f711d"
       ],
     },
   },

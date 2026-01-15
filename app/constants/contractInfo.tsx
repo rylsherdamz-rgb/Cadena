@@ -1,4 +1,4 @@
-export const contractAddress = '0x9e3Bc1532d6cc7cB1c5dDE98c6c6600D37EB5fdb';
+export const contractAddress = process.env.NEXT_PUBLIC_ROCK_CONTRACT_ADDRESS!
 
 export const abi = [
   { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
