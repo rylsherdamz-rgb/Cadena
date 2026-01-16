@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { formatEther } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
-import { abi, contractAddress } from '../constants/contractInfo';
+import { abi, contractAddress } from '../../constants/contractInfo';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Game, GameHistoryCardProps } from '@/utils/RockContractType';

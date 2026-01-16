@@ -8,7 +8,7 @@ import {
   useReadContracts,
 } from 'wagmi';
 import html2canvas from 'html2canvas';
-import { ElectionContractAddress, ELECTION_ABI } from '../constants/ElectionContract';
+import { ElectionContractAddress, ELECTION_ABI } from '../../constants/ElectionContract';
 
 type Candidate = {
   id: number;

@@ -9,7 +9,7 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from 'wagmi';
-import { ElectionContractAddress, ELECTION_ABI } from '../constants/ElectionContract';
+import { ElectionContractAddress, ELECTION_ABI } from '../../constants/ElectionContract';
 import toast from 'react-hot-toast';
 
 type Candidate = {
@@ -120,7 +120,7 @@ export default function BallotPage() {
         <ConnectButton />
       </header>
 
-      {hasVoted && (
+      {hasVoted as boolean && (
         <div className="mb-6 p-4 rounded bg-green-100 text-green-800 font-medium text-center">
           ✅ You have already voted. Thank you!
         </div>

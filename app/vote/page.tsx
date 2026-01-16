@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useReadContract, useReadContracts } from 'wagmi';
-import { ElectionContractAddress, ELECTION_ABI } from '../constants/ElectionContract';
+import { ElectionContractAddress, ELECTION_ABI } from '../../constants/ElectionContract';
 
 type Candidate = {
   id: number;

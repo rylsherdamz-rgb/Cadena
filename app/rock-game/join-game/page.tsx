@@ -7,7 +7,7 @@ import {
   RefreshCcw,
 } from 'lucide-react';
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
-import { abi, contractAddress } from '../../constants/contractInfo';
+import { abi, contractAddress } from '../../../constants/contractInfo';
 import GameSearchCard from '@/components/GameSearchCard';
 import toast from 'react-hot-toast';
 import { extractErrorMessages } from '@/utils/index';

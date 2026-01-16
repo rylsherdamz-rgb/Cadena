@@ -8,7 +8,7 @@ import {
   useWaitForTransactionReceipt,
   useWatchContractEvent,
 } from 'wagmi';
-import { abi, contractAddress } from '../../constants/contractInfo';
+import { abi, contractAddress } from '../../../constants/contractInfo';
 import toast from 'react-hot-toast';
 import { extractErrorMessages } from '@/utils/index';
 import { useRouter } from 'next/navigation';
