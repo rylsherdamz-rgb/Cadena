@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const Election = await ethers.getContractFactory("DecentralizedMessaging");
+  const Election = await ethers.getContractFactory("NationalBudget");
 
   const election = await Election.deploy();
   await election.waitForDeployment();
