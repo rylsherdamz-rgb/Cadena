@@ -1,7 +1,7 @@
 
-export const NationalBudgetAddress= process.env.NEXT_PUBLIC_NATIONAL_BUDGET_ADDRESS
+export const NationalBudgetAddress="0xAEAD82C6e07a5Ea206D686EB8d69bFe0d223E9ec" 
 
-export const NationalBudgetABI = [
+export const NationalBudgetABI =  [
     {
       "inputs": [],
       "stateMutability": "nonpayable",
@@ -291,6 +291,19 @@ export const NationalBudgetABI = [
     },
     {
       "inputs": [],
+      "name": "getSuperAdmin",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "programCount",
       "outputs": [
         {
@@ -532,4 +545,4 @@ export const NationalBudgetABI = [
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ] 
+  ]

@@ -1,5 +1,6 @@
-export const MessagaeAddress = process.env.NEXT_PUBLIC_MESSAGE_CONTRACT_ADDRESS
+export const MessageAddress = "0x4d5F36b97032B2f718dD57881b0Fe1Db56d32b02"
 export const DecentralizedMessageABI =[
+
     {
       "anonymous": false,
       "inputs": [
