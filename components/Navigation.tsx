@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { Badge, Menu, X, Cpu } from "lucide-react"
+import { Badge, Menu, X, Cpu, Terminal } from "lucide-react"
 import dynamic from "next/dynamic"
 
 function Navigation() {
@@ -20,7 +20,7 @@ function Navigation() {
     return "/" + text.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
   }
 
-  const NavigationItems = ["Rock Game", "Cadena", "About Us"]
+  const NavigationItems = ["Rock Game", "Cadena", "About Us", "Vote", "Message"]
 
   if (!mounted) return <div className="h-20 bg-white border-b-4 border-black" />
 
@@ -34,14 +34,13 @@ function Navigation() {
           onClick={() => router.push("/")}
         >
           <div className="bg-black p-2 transition-transform group-hover:rotate-12">
-            <Cpu size={24} className="text-white" />
+            <Terminal size={24} className="text-white" />
           </div>
           <p className="font-black text-2xl uppercase tracking-tighter italic italic underline decoration-4 underline-offset-4">
-            Cadena_OS
+            Cadena
           </p>
         </div>
 
-        {/* DESKTOP NAV */}
         <div className="hidden md:flex items-center gap-2">
           {NavigationItems.map((item, index) => {
             const route = toRoute(item)
@@ -72,7 +71,6 @@ function Navigation() {
         </button>
       </div>
 
-      {/* MOBILE MENU */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-[84px] left-0 w-full bg-white border-b-4 border-black p-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300">
           {NavigationItems.map((item, index) => (
