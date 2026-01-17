@@ -1,4 +1,4 @@
-export const ElectionContractAddress = process.env.NEXT_PUBLIC_ELECTION_CONTRACT_ADDRESS;
+export const ElectionContractAddress = process.env.NEXT_PUBLIC_ELECTION_CONTRACT_ADDRESS! as `0x${string}`
 
 export const ELECTION_ABI = [
     {

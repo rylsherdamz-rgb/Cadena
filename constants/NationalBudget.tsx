@@ -1,5 +1,5 @@
 
-export const NationalBudgetAddress="0xAEAD82C6e07a5Ea206D686EB8d69bFe0d223E9ec" 
+export const NationalBudgetAddress="0xAEAD82C6e07a5Ea206D686EB8d69bFe0d223E9ec" as `0x${string}` 
 
 export const NationalBudgetABI =  [
     {

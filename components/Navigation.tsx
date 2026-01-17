@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { Badge, Menu, X, Cpu, Terminal } from "lucide-react"
+import { Badge, Menu, X, Cpu, Terminal  } from "lucide-react"
 import dynamic from "next/dynamic"
 
 function Navigation() {
