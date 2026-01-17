@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
   Swords,
@@ -9,6 +11,8 @@ import {
   CircleDollarSign,
   CheckCircle2,
   Clock,
+  ArrowRight,
+  Terminal,
 } from 'lucide-react';
 import { formatEther } from 'viem';
 import Link from 'next/link';
@@ -26,27 +30,27 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
     switch (Number(type)) {
       case 0:
         return {
-          name: 'Quick Match',
+          name: 'Quick_Match',
           rounds: 1,
-          icon: <Gamepad2 className="h-5 w-5 text-emerald-500" />,
+          icon: <Gamepad2 className="h-5 w-5" />,
         };
       case 1:
         return {
-          name: 'Best of Three',
+          name: 'Best_of_Three',
           rounds: 3,
-          icon: <Swords className="h-5 w-5 text-blue-500" />,
+          icon: <Swords className="h-5 w-5" />,
         };
       case 2:
         return {
           name: 'Championship',
           rounds: 5,
-          icon: <Trophy className="h-5 w-5 text-yellow-500" />,
+          icon: <Trophy className="h-5 w-5" />,
         };
       default:
         return {
-          name: 'Unknown',
+          name: 'Unknown_Protocol',
           rounds: 0,
-          icon: <Gamepad2 className="h-5 w-5 text-gray-500" />,
+          icon: <Terminal className="h-5 w-5" />,
         };
     }
   };
@@ -57,13 +61,16 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
       game.players[1] === ZERO_ADDRESS)
   ) {
     return (
-      <div className="w-full px-[5%]">
-        <div className="flex flex-col items-center justify-center w-full h-full p-6 bg-gray-800 rounded-lg border-2 border-gray-700">
-          <Gamepad2 className="w-12 h-12 text-red-500 mb-4" />
-          <p className="text-gray-300 text-lg">
-            Game not found. Please check the game ID.
-          </p>
+      <div className="w-full border-4 border-black p-10 bg-white flex flex-col items-center justify-center text-center">
+        <div className="bg-black p-4 mb-4">
+          <Gamepad2 className="w-12 h-12 text-white" />
         </div>
+        <p className="font-black uppercase italic text-xl tracking-tighter">
+          NODE_NOT_FOUND
+        </p>
+        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-2">
+          Verify Game ID and retry broadcast.
+        </p>
       </div>
     );
   }
@@ -82,114 +89,116 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
   };
 
   return (
-    <div className="w-full px-[5%]">
-      <div className="w-full h-screen rounded-lg border-2 border-gray-700 bg-gray-800/80 p-6 backdrop-blur-sm hover:border-gray-600 transition-all duration-200">
-        {/* Header */}
-        <div className="mb-6 flex items-start justify-between">
-          <div className="flex items-start space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-700/50">
-              {gameTypeInfo.icon}
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-lg font-semibold text-white">
-                  Game #{game.gameId.toString()}
-                </h3>
-
-                <button
-                  onClick={copyGameId}
-                  className="rounded-md p-1 text-gray-400 hover:bg-gray-700 hover:text-gray-300 transition-colors"
-                  title="Copy Game ID"
-                >
-                  <Copy className="h-4 w-4" />
-                </button>
-
-                <span
-                  className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    game.isActive
-                      ? 'bg-green-900/50 text-green-400'
-                      : 'bg-gray-700 text-gray-400'
-                  }`}
-                >
-                  {game.isActive ? (
-                    <>
-                      <CheckCircle2 className="h-3 w-3" />
-                      Active
-                    </>
-                  ) : (
-                    <>
-                      <Clock className="h-3 w-3" />
-                      Inactive
-                    </>
-                  )}
-                </span>
-              </div>
-
-              <div className="mt-2 flex flex-wrap items-center gap-4 text-gray-400">
-                <div className="flex items-center gap-1.5">
-                  <CircleDollarSign className="h-4 w-4 text-yellow-500" />
-                  {formattedStake} ETH
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  {hasSecondPlayer ? (
-                    <Users className="h-4 w-4 text-blue-500" />
-                  ) : (
-                    <User className="h-4 w-4 text-blue-500" />
-                  )}
-                  {hasSecondPlayer ? '2 Players' : '1 Player'}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-gray-300">
-            <div className="flex items-center gap-2 rounded-lg bg-gray-700/50 px-3 py-2">
-              {gameTypeInfo.icon}
-              {gameTypeInfo.name}
-            </div>
+    <div className="w-full bg-white border-4 border-black p-6 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] group">
+      {/* Header */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-start justify-between gap-6">
+        <div className="flex items-start space-x-5">
+          <div className="flex h-16 w-16 items-center justify-center border-4 border-black bg-zinc-50 shrink-0">
+            {gameTypeInfo.icon}
           </div>
 
-          {!playerCompleteAndIsUserPlayer && (
-            <button
-              onClick={() => onJoinGame(game.gameId, game.stake)}
-              disabled={isLoading || hasSecondPlayer}
-              className={`w-full rounded-lg px-4 py-3 font-medium transition-all duration-200 ${
-                hasSecondPlayer
-                  ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
-              }`}
-            >
-              <span className="flex items-center justify-center gap-2">
-                {hasSecondPlayer ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h3 className="text-3xl font-black uppercase italic tracking-tighter leading-none">
+                Node_#{game.gameId.toString()}
+              </h3>
+
+              <button
+                onClick={copyGameId}
+                className="p-1 border-2 border-black hover:bg-black hover:text-white transition-all active:translate-y-0.5"
+                title="Copy Game ID"
+              >
+                <Copy className="h-3 w-3" />
+              </button>
+
+              <div
+                className={`flex items-center gap-1 border-2 border-black px-3 py-0.5 text-[9px] font-black uppercase tracking-widest ${
+                  game.isActive
+                    ? 'bg-black text-white'
+                    : 'bg-zinc-100 text-zinc-400'
+                }`}
+              >
+                {game.isActive ? (
                   <>
-                    <Users className="h-5 w-5" />
-                    Game Full
+                    <CheckCircle2 className="h-3 w-3" />
+                    STATUS: ACTIVE
                   </>
-                ) : isLoading ? (
-                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <User className="h-5 w-5" />
-                    Join Game
+                    <Clock className="h-3 w-3" />
+                    STATUS: INACTIVE
                   </>
                 )}
-              </span>
-            </button>
-          )}
+              </div>
+            </div>
 
-          {playerCompleteAndIsUserPlayer && (
-            <Link href={`/game/${game.gameId}`}>
-              <button className="w-full flex items-center justify-center p-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                Enter Game
-              </button>
-            </Link>
-          )}
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2 font-mono font-black text-lg italic">
+                <CircleDollarSign className="h-5 w-5" />
+                {formattedStake} <span className="text-sm">ETH</span>
+              </div>
+
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
+                {hasSecondPlayer ? (
+                  <Users className="h-4 w-4" />
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
+                {hasSecondPlayer ? '2_PEERS_SYNCED' : 'AWAITING_PEER'}
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Info Tag */}
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-3 border-4 border-black px-4 py-2 bg-zinc-50 font-black uppercase italic text-sm">
+          {gameTypeInfo.icon}
+          {gameTypeInfo.name.replace(' ', '_')}
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="mt-4">
+        {!playerCompleteAndIsUserPlayer && (
+          <button
+            onClick={() => onJoinGame(game.gameId, game.stake)}
+            disabled={isLoading || hasSecondPlayer}
+            className={`w-full py-5 border-4 border-black font-black uppercase tracking-[0.4em] text-sm transition-all flex items-center justify-center gap-4 ${
+              hasSecondPlayer
+                ? 'bg-zinc-100 text-zinc-300 border-zinc-200 cursor-not-allowed shadow-none'
+                : 'bg-black text-white hover:bg-white hover:text-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1'
+            }`}
+          >
+            {hasSecondPlayer ? (
+              <>
+                <Users className="h-5 w-5" />
+                NODE_CAPACITY_REACHED
+              </>
+            ) : isLoading ? (
+              <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                JOIN_CONFERENCE <ArrowRight className="h-5 w-5" />
+              </>
+            )}
+          </button>
+        )}
+
+        {playerCompleteAndIsUserPlayer && (
+          <Link href={`/game/${game.gameId}`}>
+            <button className="w-full py-5 border-4 border-black bg-black text-white font-black uppercase tracking-[0.4em] text-sm hover:bg-white hover:text-black transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-3">
+              ENTER_SIMULATION <ArrowRight className="h-5 w-5" />
+            </button>
+          </Link>
+        )}
+      </div>
+      
+      {/* Schematic Footer */}
+      <div className="mt-6 pt-4 border-t-2 border-black border-dotted opacity-20 flex justify-between font-mono text-[8px] font-black uppercase">
+        <span>[SIG_VERIFIED]</span>
+        <span>[ADDR_{game.players[0].slice(0,6)}...]</span>
       </div>
     </div>
   );

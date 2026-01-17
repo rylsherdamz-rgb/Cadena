@@ -20,12 +20,12 @@ function Navigation() {
     return "/" + text.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
   }
 
-  const NavigationItems = ["Rock Game", "Cadena", "About Us", "Vote", "Message"]
+  const NavigationItems = ["Rock Game", "Cadena",  "Vote", "Message", "About Us",]
 
   if (!mounted) return <div className="h-20 bg-white border-b-4 border-black" />
 
   return (
-    <nav className="w-full bg-white border-b-4 border-black sticky top-0 z-[100] px-6 md:px-10 py-5">
+    <nav className="w-full bg-white border-b-4 border-black sticky top-0 z-[100] text-black px-6 md:px-10 py-5">
       <div className="container mx-auto flex justify-between items-center">
         
         {/* LOGO SECTION */}

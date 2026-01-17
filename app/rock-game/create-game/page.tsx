@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Trophy, Coins, Swords, Timer, Info } from 'lucide-react';
+import { Trophy, Coins, Swords, Timer, Info, ChevronRight, Loader2, Target, Terminal } from 'lucide-react';
 import { parseEther } from 'viem';
 import {
   useWriteContract,
@@ -14,9 +14,9 @@ import { extractErrorMessages } from '@/utils/index';
 import { useRouter } from 'next/navigation';
 
 const GAME_TYPES = [
-  { id: 0, name: 'Quick Match', description: 'Single round, winner takes all', icon: Timer, matches: '1 Round' },
-  { id: 1, name: 'Best of Three', description: 'First to win 2 rounds', icon: Swords, matches: '3 Rounds' },
-  { id: 2, name: 'Championship', description: 'First to win 3 rounds', icon: Trophy, matches: '5 Rounds' },
+  { id: 0, name: 'Quick Match', description: 'Single round, winner takes all', icon: Timer, matches: '1_ROUND' },
+  { id: 1, name: 'Best of Three', description: 'First to win 2 rounds', icon: Swords, matches: '3_ROUNDS' },
+  { id: 2, name: 'Championship', description: 'First to win 3 rounds', icon: Trophy, matches: '5_ROUNDS' },
 ];
 
 export default function CreateGame() {
@@ -32,7 +32,9 @@ export default function CreateGame() {
       if (firstLog && 'args' in firstLog && firstLog.args) {
         const createdGameID = (firstLog.args as { gameId?: bigint }).gameId;
         if (createdGameID !== undefined) {
-          toast.success(`Game #${createdGameID.toString()} created`, { duration: 5000 });
+          toast.success(`NODE_ESTABLISHED: #${createdGameID.toString()}`, { 
+            style: { border: '4px solid black', borderRadius: '0', fontWeight: 'bold' } 
+          });
           setTimeout(() => {
             router.push(`/game/${createdGameID.toString()}`);
           }, 2000);
@@ -49,7 +51,9 @@ export default function CreateGame() {
   const handleCreateGame = async () => {
     if (!stakeAmount || parseFloat(stakeAmount) <= 0) return;
 
-    const toastId = toast.loading('Preparing to create game...', { icon: '⚔️', duration: 3000 });
+    const toastId = toast.loading('INITIALIZING_PROTOCOL...', { 
+        style: { border: '4px solid black', borderRadius: '0' } 
+    });
 
     try {
       await writeContract({
@@ -59,11 +63,8 @@ export default function CreateGame() {
         args: [BigInt(selectedType)],
         value: parseEther(stakeAmount),
       });
-
-      toast.loading('Waiting for transaction confirmation...', { id: toastId, icon: '⏳', duration: 3000 });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to create game', { id: toastId, duration: 3000, icon: '❌' });
-      console.error('Error creating game:', err);
+      toast.error('EXECUTION_FAILED', { id: toastId });
     }
   };
 
@@ -76,18 +77,23 @@ export default function CreateGame() {
 
   useEffect(() => {
     if (error) {
-      toast.error(extractErrorMessages(error?.message), { duration: 3000, icon: '❌' });
-      console.log(error);
+      toast.error(extractErrorMessages(error?.message));
     }
   }, [error]);
 
   const isLoading = isPending || isConfirming;
 
   return (
-    <div className=' bg-white px-[5%] w-full min-h-screen text-black py-10 '>
-      <div className=''>
-        <h2 className='text-lg font-semibold'>Select Game Type</h2>
-        <div className='grid gap-3'>
+    <div className='bg-white w-full px-[5%] py-1 text-black space-y-12'>
+      
+      {/* GAME TYPE SELECTION */}
+      <section className='space-y-6'>
+        <div className='flex items-center gap-2 border-l-8 border-black pl-4'>
+            <Target size={20} color="#000" />
+            <h2 className='text-xl font-black uppercase italic text-black tracking-tighter'>Select_Match_Type</h2>
+        </div>
+        
+        <div className='grid gap-4'>
           {GAME_TYPES.map((type) => {
             const Icon = type.icon;
             const isSelected = selectedType === type.id;
@@ -95,33 +101,40 @@ export default function CreateGame() {
               <button
                 key={type.id}
                 onClick={() => setSelectedType(type.id)}
-                className={`flex items-center p-3 rounded-lg border transition-all duration-200 ${
+                className={`group flex items-center p-5 border-4 transition-all text-left ${
                   isSelected
-                    ? 'border-black bg-gray-100'
-                    : 'border-gray-300 bg-white hover:bg-gray-50'
+                    ? 'border-black bg-black text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)]'
+                    : 'border-black bg-white text-black hover:bg-zinc-50'
                 }`}
               >
-                <div className={`p-2 rounded-lg ${isSelected ? 'bg-black' : 'bg-gray-100'}`}>
-                  <Icon className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-black'}`} />
+                <div className={`p-3 border-2 ${isSelected ? 'border-white bg-white text-black' : 'border-black bg-zinc-100'}`}>
+                  <Icon className="w-6 h-6" />
                 </div>
-                <div className='ml-3 flex-1 text-left'>
-                  <h3 className='font-medium'>{type.name}</h3>
-                  <p className='text-sm text-gray-600'>{type.description}</p>
+                <div className='ml-5 flex-1'>
+                  <h3 className='font-black uppercase italic text-lg leading-none'>{type.name.replace(' ', '_')}</h3>
+                  <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isSelected ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                    {type.description}
+                  </p>
                 </div>
-                <span className='text-sm font-medium px-2 py-0.5 rounded-full border border-gray-300 bg-gray-50'>
+                <span className={`text-[10px] font-black px-3 py-1 border-2 hidden md:block ${isSelected ? 'border-white text-white' : 'border-black text-black'}`}>
                   {type.matches}
                 </span>
               </button>
             );
           })}
         </div>
-      </div>
+      </section>
 
-      <div className='space-y-2'>
-        <h2 className='text-lg font-semibold'>Set Stake Amount</h2>
-        <div className='relative'>
-          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-            <Coins className='h-5 w-5 text-gray-400' />
+      {/* STAKE INPUT */}
+      <section className='space-y-6'>
+        <div className='flex items-center gap-2 border-l-8 border-black pl-4'>
+            <Coins size={20} />
+            <h2 className='text-xl font-black uppercase italic tracking-tighter'>Set_Asset_Stake</h2>
+        </div>
+
+        <div className='relative group'>
+          <div className='absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none'>
+            <Terminal size={18} className='text-black' />
           </div>
           <input
             type='number'
@@ -129,37 +142,51 @@ export default function CreateGame() {
             min='0'
             value={stakeAmount}
             onChange={(e) => setStakeAmount(e.target.value)}
-            placeholder='Enter ETH amount'
-            className='w-full pl-10 pr-12 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-black text-black transition-colors'
+            placeholder='0.00'
+            className='w-full pl-14 pr-20 py-6 bg-white border-4 border-black outline-none font-mono font-black text-2xl focus:bg-zinc-50 transition-colors placeholder:text-zinc-200'
           />
-          <div className='absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none'>
-            <span className='text-gray-500'>ETH</span>
+          <div className='absolute inset-y-0 right-0 pr-6 flex items-center pointer-events-none'>
+            <span className='font-black text-lg italic'>ETH</span>
           </div>
         </div>
-        <p className='flex items-center text-sm text-gray-500'>
-          <Info className='w-4 h-4 mr-1' /> Stake must be greater than 0 ETH
-        </p>
-      </div>
+        
+        <div className='flex items-center gap-2 p-3 bg-zinc-100 border-2 border-black border-dashed'>
+          <Info size={14} className="text-black" />
+          <p className='text-[9px] font-black uppercase tracking-[0.2em] text-black'>
+            Condition: Value must be {">"} 0.000 ETH for protocol execution.
+          </p>
+        </div>
+      </section>
 
-      {/* Create Game Button */}
+      {/* ACTION BUTTON */}
       <button
         onClick={handleCreateGame}
         disabled={!stakeAmount || isLoading || parseFloat(stakeAmount) <= 0}
-        className={`w-full py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-colors ${
+        className={`w-full py-8 border-4 border-black font-black uppercase tracking-[0.5em] text-sm flex items-center justify-center gap-4 transition-all shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 ${
           !stakeAmount || parseFloat(stakeAmount) <= 0
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-black text-white hover:bg-gray-900'
+            ? 'bg-zinc-100 text-zinc-300 border-zinc-200 cursor-not-allowed shadow-none'
+            : 'bg-black text-white hover:bg-white hover:text-black'
         }`}
       >
         {isLoading ? (
-          <div className='w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin' />
+          <>
+            <Loader2 className='w-6 h-6 animate-spin' />
+            <span>Verifying_Order...</span>
+          </>
         ) : (
           <>
-            <Swords className='w-5 h-5' />
-            <span>Create Game</span>
+            <ChevronRight className='w-6 h-6' />
+            <span>Deploy_Game_Node</span>
           </>
         )}
       </button>
+
+      {/* FOOTER SCHEMATIC */}
+      <div className="pt-8 border-t-2 border-black border-dotted opacity-20 font-mono text-[8px] flex justify-between uppercase">
+        <span>[AUTH_SIG_REQUIRED]</span>
+        <span>[STAKE_LOCKED_IN_ESCROW]</span>
+        <span>[NETWORK_MAINNET_SIM]</span>
+      </div>
     </div>
   );
 }
