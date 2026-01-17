@@ -116,7 +116,6 @@ export default function Home() {
             Filter Status
           </button>
           
-          {/* Only show "New Proposal" if DBM (Role 0) */}
           {roleInfo.role === 0 && (
             <button className="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition shadow-lg shadow-blue-200">
               <Plus className="w-4 h-4" />
@@ -125,7 +124,6 @@ export default function Home() {
           )}
         </div>
 
-        {/* STATS OVERVIEW */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
             <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Total Items</p>
