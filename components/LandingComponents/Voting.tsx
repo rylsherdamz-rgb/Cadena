@@ -1,0 +1,121 @@
+"use client"
+
+import { useEffect, useRef } from "react"
+import { gsap } from "gsap"
+
+export default function ElectionShowcase() {
+  const containerRef = useRef(null)
+  const pulseRef = useRef(null)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ repeat: -1 })
+
+      tl.from(".voter-card", {
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: "power3.out"
+      })
+
+      tl.to(".progress-fill", {
+        width: "100%",
+        duration: 1.5,
+        ease: "power2.inOut"
+      })
+
+      tl.from(".block-stamp", {
+        scale: 2,
+        opacity: 0,
+        duration: 0.4,
+        ease: "back.out(1.7)"
+      })
+
+      tl.to(".count-up", {
+        innerText: (i, target) => target.getAttribute("data-end"),
+        duration: 1,
+        snap: { innerText: 1 }
+      }, "-=0.5")
+
+      tl.to(containerRef.current, {
+        opacity: 0,
+        duration: 1,
+        delay: 3
+      })
+    }, containerRef)
+
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section ref={containerRef} className="w-full py-32 bg-white text-black flex flex-col items-center overflow-hidden">
+      <div className="text-center mb-20 px-6">
+        <h2 className="text-xs font-black tracking-[0.5em] uppercase text-gray-400 mb-4">Democratic Protocol</h2>
+        <h3 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic">Voice of the People</h3>
+      </div>
+
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-10 px-6">
+        <div className="lg:col-span-4 flex flex-col gap-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Live Election Feed</p>
+          <VoterAction name="Node_821" action="Cast Vote for Leader A" time="2s ago" />
+          <VoterAction name="Node_044" action="Cast Vote for Leader B" time="5s ago" />
+          <VoterAction name="Node_991" action="Cast Vote for Leader A" time="12s ago" />
+          <VoterAction name="Node_112" action="Cast Vote for Leader C" time="15s ago" />
+        </div>
+
+        <div className="lg:col-span-8 border-[10px] border-black p-8 md:p-12 flex flex-col justify-between min-h-[500px] relative">
+          <div className="flex justify-between items-start">
+            <div className="space-y-1">
+              <h4 className="text-3xl font-black uppercase italic tracking-tighter">Real-Time Consensus</h4>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Election ID: PHIL-2026-X</p>
+            </div>
+            <div className="block-stamp px-4 py-2 bg-black text-white text-[10px] font-bold uppercase tracking-widest">
+              Verified by Blockchain
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 my-12">
+            <StatsBox label="Leader A" count="12840" end="12940" />
+            <StatsBox label="Leader B" count="11200" end="11250" />
+            <StatsBox label="Leader C" count="9402" end="9415" />
+          </div>
+
+          <div className="space-y-6">
+            <div className="w-full h-4 bg-gray-100 relative">
+              <div className="progress-fill absolute top-0 left-0 h-full bg-black w-0" />
+            </div>
+            <div className="flex flex-wrap justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <div ref={pulseRef} className="w-3 h-3 bg-black rounded-full animate-ping" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Processing Global Tally</span>
+              </div>
+              <span className="text-[10px] font-mono text-gray-400">HASH: f32...91a | TOTAL VOTES: 33,605</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function VoterAction({ name, action, time }) {
+  return (
+    <div className="voter-card p-4 border border-gray-200 flex flex-col gap-1 hover:border-black transition-colors cursor-default">
+      <div className="flex justify-between items-center">
+        <span className="text-[10px] font-black uppercase tracking-tighter">{name}</span>
+        <span className="text-[9px] text-gray-400 font-mono">{time}</span>
+      </div>
+      <p className="text-xs font-bold uppercase">{action}</p>
+    </div>
+  )
+}
+
+function StatsBox({ label, count, end }) {
+  return (
+    <div className="flex flex-col border-l-4 border-black pl-6">
+      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">{label}</span>
+      <span className="count-up text-4xl font-black tracking-tighter" data-end={end}>{count}</span>
+    </div>
+  )
+}

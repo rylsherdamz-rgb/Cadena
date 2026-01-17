@@ -2,6 +2,10 @@
 
 import Header from "@/components/Header"
 import Hero from "@/components/HeroComponents/Hero"
+import MessagingShowCase from "@/components/LandingComponents/Message"
+import VotingShowcase from "@/components/LandingComponents/Voting"
+import NationalBudgetShowCase from  "@/components/LandingComponents/NationalBuget"
+
 
 export default function Home() {
   return (
@@ -11,6 +15,15 @@ export default function Home() {
       </div>
       <div className="w-full flex flex-1 items-center ">
         <Hero />
+      </div>
+      <div>
+        <MessagingShowCase />
+      </div>
+      <div>
+        <VotingShowcase />
+      </div>
+      <div>
+        <NationalBudgetShowCase /> 
       </div>
     </div>
   )
