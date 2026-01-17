@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Inbox } from "@/components/Inbox";
+import  Inbox  from "@/components/Inbox";
 import { Mail, Shield, Zap, Lock } from "lucide-react";
 
 function MessagePage() {

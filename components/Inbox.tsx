@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { 
   useAccount, 
   useWriteContract, 
@@ -9,6 +10,8 @@ import {
   useSimulateContract 
 } from "wagmi";
 import { DecentralizedMessageABI, MessageAddress } from "@/constants/DecentralizeMessaging";
+import { Send, Inbox as InboxIcon, RefreshCw, Eye, EyeOff, ShieldAlert, Terminal } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Message {
   sender: `0x${string}`;
@@ -17,10 +20,15 @@ interface Message {
   read: boolean;
 }
 
-export function Inbox() {
+function Inbox() {
+  const [mounted, setMounted] = useState(false);
   const { address, isConnected } = useAccount();
   const [recipient, setRecipient] = useState("");
   const [content, setContent] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // --- 1. READ: getMyMessages ---
   const { 
@@ -53,20 +61,22 @@ export function Inbox() {
   const { data: readHash, writeContract: writeMarkRead } = useWriteContract();
   const { isLoading: isConfirmingRead, isSuccess: isConfirmedRead } = useWaitForTransactionReceipt({ hash: readHash });
 
-  // Refresh data on any success
+  // Sync and Refresh
   useEffect(() => {
     if (isConfirmedSend || isConfirmedRead) {
       if (isConfirmedSend) {
         setRecipient("");
         setContent("");
+        toast.success("Broadcast successful");
       }
       refetch();
     }
   }, [isConfirmedSend, isConfirmedRead, refetch]);
 
-  // Handlers
   const handleSendMessage = () => {
-    if (simulateSend?.request) writeSendMessage(simulateSend.request);
+    if (simulateSend?.request) {
+      writeSendMessage(simulateSend.request);
+    }
   };
 
   const handleMarkAsRead = (index: number) => {
@@ -78,151 +88,156 @@ export function Inbox() {
     });
   };
 
-  if (!isConnected) return null;
+  if (!mounted || !isConnected) return <div className="min-h-screen bg-white" />;
 
   const messages = (inboxData as Message[]) || [];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      {/* LEFT: COMPOSE PANEL */}
-      <section className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm sticky top-24">
-        <h3 className="text-lg font-semibold mb-6 flex items-center gap-2 text-slate-800">
-          <span className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-          </span>
-          Send New Message
-        </h3>
+    <div className="max-w-7xl mx-auto py-12 px-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        <div className="space-y-5">
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Recipient Address</label>
-            <input
-              type="text"
-              placeholder="0x..."
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all font-mono text-sm"
-            />
+        {/* LEFT: COMPOSE PANEL */}
+        <section className="lg:col-span-5">
+          <div className="bg-white border-4 border-black p-8 shadow-[15px_15px_0px_0px_rgba(0,0,0,1)] sticky top-32">
+            <div className="flex items-center gap-3 mb-8 border-b-4 border-black pb-4">
+              <div className="bg-black p-2 text-white">
+                <Send size={20} />
+              </div>
+              <h3 className="text-2xl font-black uppercase italic tracking-tighter">Broadcast_Node</h3>
+            </div>
+            
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Recipient_Address</label>
+                <input
+                  type="text"
+                  placeholder="0x000..."
+                  value={recipient}
+                  onChange={(e) => setRecipient(e.target.value)}
+                  className="w-full p-4 border-4 border-black bg-white focus:bg-gray-50 outline-none font-mono text-xs font-bold"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Encrypted_Payload</label>
+                <textarea
+                  placeholder="Enter message content..."
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="w-full p-4 border-4 border-black bg-white h-48 focus:bg-black focus:text-white outline-none transition-all resize-none font-bold"
+                />
+              </div>
+
+              <button
+                onClick={handleSendMessage}
+                disabled={!simulateSend?.request || isSending || isConfirmingSend}
+                className={`w-full py-6 border-4 border-black font-black uppercase tracking-[0.4em] text-sm transition-all flex items-center justify-center gap-4 ${
+                  !simulateSend?.request 
+                    ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" 
+                    : "bg-black text-white hover:bg-white hover:text-black active:translate-y-1"
+                }`}
+              >
+                {isSending ? "Authorizing..." : isConfirmingSend ? "Mining_Block..." : "Execute_Broadcast"}
+              </button>
+
+              {simError && recipient.length === 42 && (
+                <div className="p-4 bg-red-50 border-2 border-red-600 flex items-start gap-3">
+                  <ShieldAlert size={18} className="text-red-600 flex-shrink-0" />
+                  <p className="text-[9px] font-black text-red-600 uppercase leading-tight">
+                    Simulation_Failed: Check GAS_LIMIT or ADDR_VALIDITY
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
+        </section>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Message</label>
-            <textarea
-              placeholder="Write something nice..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl h-40 focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all resize-none"
-            />
-          </div>
-
-          <button
-            onClick={handleSendMessage}
-            disabled={!simulateSend?.request || isSending || isConfirmingSend}
-            className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all active:scale-[0.98] ${
-              !simulateSend?.request 
-                ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none" 
-                : "bg-blue-600 hover:bg-blue-700 shadow-blue-200"
-            }`}
-          >
-            {isSending ? "Check Wallet..." : isConfirmingSend ? "Confirming on Chain..." : "Broadcast Message"}
-          </button>
-
-          {simError && recipient.length === 42 && (
-            <div className="p-3 bg-red-50 border border-red-100 rounded-lg">
-              <p className="text-[10px] text-red-600 leading-tight">
-                <strong>Simulation Failed:</strong> Your transaction might fail. Check if you have enough gas or if the recipient address is valid.
+        {/* RIGHT: INBOX LIST */}
+        <section className="lg:col-span-7">
+          <div className="flex justify-between items-end mb-10 border-b-8 border-black pb-6">
+            <div>
+              <h3 className="text-5xl font-black uppercase italic tracking-tighter leading-none">
+                Private <br /> <span className="text-gray-300">Archives</span>
+              </h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 mt-4 flex items-center gap-2">
+                <Terminal size={14} /> Total_Entries: {messages.length}
               </p>
             </div>
-          )}
-        </div>
-      </section>
-
-      {/* RIGHT: INBOX LIST */}
-      <section className="lg:col-span-7">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-            Your Inbox
-            <span className="bg-blue-600 text-white text-xs py-0.5 px-2.5 rounded-full font-medium">
-              {messages.length}
-            </span>
-          </h3>
-          <button 
-            onClick={() => refetch()} 
-            className="p-2 hover:bg-slate-200 rounded-full transition-colors bg-slate-100"
-            disabled={isReading}
-          >
-            <svg className={`w-5 h-5 text-slate-600 ${isReading ? 'animate-spin' : ''}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </button>
-        </div>
-
-        {messages.length === 0 ? (
-          <div className="text-center py-24 bg-white border-2 border-dashed border-slate-200 rounded-3xl text-slate-400">
-            <div className="text-5xl mb-4 text-slate-200 italic font-serif">"</div>
-            <p className="font-medium">No messages found for your address.</p>
-            <p className="text-sm">Share your address to start receiving mail.</p>
+            <button 
+              onClick={() => refetch()} 
+              className={`p-4 border-4 border-black transition-all active:rotate-180 ${isReading ? 'bg-black text-white' : 'bg-white hover:bg-black hover:text-white'}`}
+            >
+              <RefreshCw size={24} className={isReading ? 'animate-spin' : ''} />
+            </button>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {[...messages].reverse().map((msg, reversedIdx) => {
-              const originalIdx = messages.length - 1 - reversedIdx;
-              return (
-                <div 
-                  key={originalIdx} 
-                  className={`group relative p-6 rounded-2xl border transition-all duration-300 ${
-                    msg.read 
-                      ? "bg-white/60 border-slate-200 opacity-90" 
-                      : "bg-white border-blue-200 shadow-xl shadow-blue-50 ring-1 ring-blue-50"
-                  }`}
-                >
-                  {/* Unread dot */}
-                  {!msg.read && (
-                    <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-10 bg-blue-600 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]"></span>
-                  )}
-                  
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Sender</span>
-                      <span className="text-sm font-mono text-slate-700 bg-slate-100 px-2 py-1 rounded-md">
-                        {msg.sender.slice(0, 8)}...{msg.sender.slice(-6)}
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Date Received</span>
-                      <span className="text-xs text-slate-500 font-medium">
-                        {new Date(Number(msg.timestamp) * 1000).toLocaleDateString(undefined, {
-                           month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-                        })}
-                      </span>
-                    </div>
-                  </div>
 
-                  <p className="text-slate-700 text-base leading-relaxed mb-6 whitespace-pre-wrap">{msg.content}</p>
-
-                  <div className="flex items-center justify-end border-t border-slate-100 pt-4">
-                    {!msg.read ? (
-                      <button
-                        onClick={() => handleMarkAsRead(originalIdx)}
-                        disabled={isConfirmingRead}
-                        className="text-xs font-bold text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-600 px-4 py-2 rounded-lg transition-all"
-                      >
-                        {isConfirmingRead ? "Updating..." : "Mark as Read"}
-                      </button>
-                    ) : (
-                      <div className="flex items-center gap-1.5 text-slate-300">
-                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                         <span className="text-[10px] font-bold uppercase tracking-widest">Seen</span>
+          {messages.length === 0 ? (
+            <div className="border-4 border-dashed border-gray-200 p-24 text-center">
+              <InboxIcon size={48} className="mx-auto mb-4 text-gray-200" />
+              <p className="font-black uppercase text-gray-300 tracking-[0.2em]">Zero_Messages_Detected</p>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {[...messages].reverse().map((msg, reversedIdx) => {
+                const originalIdx = messages.length - 1 - reversedIdx;
+                return (
+                  <div 
+                    key={originalIdx} 
+                    className={`relative p-8 border-4 border-black transition-all ${
+                      msg.read 
+                        ? "bg-white opacity-60 shadow-[5px_5px_0px_0px_rgba(0,0,0,0.1)]" 
+                        : "bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] translate-x-[-4px] translate-y-[-4px]"
+                    }`}
+                  >
+                    {!msg.read && (
+                      <div className="absolute top-0 right-0 bg-black text-white px-4 py-1 text-[10px] font-black uppercase">
+                        New_Transmission
                       </div>
                     )}
+                    
+                    <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8 border-b-2 border-black/5 pb-4">
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-black uppercase text-gray-400 tracking-widest">Origin_Node</span>
+                        <p className="text-xs font-mono font-black break-all bg-gray-100 px-2 py-1">{msg.sender}</p>
+                      </div>
+                      <div className="md:text-right space-y-1">
+                        <span className="text-[9px] font-black uppercase text-gray-400 tracking-widest">Received_At</span>
+                        <p className="text-[10px] font-black uppercase">
+                          {new Date(Number(msg.timestamp) * 1000).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-6 border-l-8 border-black mb-8">
+                      <p className="text-lg font-bold leading-tight whitespace-pre-wrap tracking-tight italic">
+                        "{msg.content}"
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-end">
+                      {!msg.read ? (
+                        <button
+                          onClick={() => handleMarkAsRead(originalIdx)}
+                          className="px-6 py-2 bg-black text-white font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black border-2 border-black transition-all flex items-center gap-2"
+                        >
+                          <Eye size={14} /> Open_Payload
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2 text-gray-300">
+                           <EyeOff size={14} />
+                           <span className="text-[9px] font-black uppercase tracking-widest">Stored_In_Archive</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(Inbox), { ssr: false });
