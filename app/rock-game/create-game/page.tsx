@@ -14,9 +14,9 @@ import { extractErrorMessages } from '@/utils/index';
 import { useRouter } from 'next/navigation';
 
 const GAME_TYPES = [
-  { id: 0, name: 'Quick Match', description: 'Single round, winner takes all', icon: Timer, matches: '1_ROUND' },
-  { id: 1, name: 'Best of Three', description: 'First to win 2 rounds', icon: Swords, matches: '3_ROUNDS' },
-  { id: 2, name: 'Championship', description: 'First to win 3 rounds', icon: Trophy, matches: '5_ROUNDS' },
+  { id: 0, name: 'Quick Match', description: '1 round, winner takes all', icon: Timer, matches: '1_RND' },
+  { id: 1, name: 'Best of Three', description: 'First to win 2 rounds', icon: Swords, matches: '3_RND' },
+  { id: 2, name: 'Championship', description: 'First to win 3 rounds', icon: Trophy, matches: '5_RND' },
 ];
 
 export default function CreateGame() {
@@ -51,7 +51,7 @@ export default function CreateGame() {
   const handleCreateGame = async () => {
     if (!stakeAmount || parseFloat(stakeAmount) <= 0) return;
 
-    const toastId = toast.loading('INITIALIZING_PROTOCOL...', { 
+    const toastId = toast.loading('INITIALIZING...', { 
         style: { border: '4px solid black', borderRadius: '0' } 
     });
 
@@ -84,16 +84,16 @@ export default function CreateGame() {
   const isLoading = isPending || isConfirming;
 
   return (
-    <div className='bg-white w-full px-[5%] py-1 text-black space-y-12'>
+    <div className='bg-white w-full px-4 md:px-[5%] py-4 text-black space-y-8 md:space-y-12 overflow-x-hidden'>
       
       {/* GAME TYPE SELECTION */}
-      <section className='space-y-6'>
-        <div className='flex items-center gap-2 border-l-8 border-black pl-4'>
-            <Target size={20} color="#000" />
-            <h2 className='text-xl font-black uppercase italic text-black tracking-tighter'>Select_Match_Type</h2>
+      <section className='space-y-4 md:space-y-6'>
+        <div className='flex items-center gap-2 border-l-4 md:border-l-8 border-black pl-3 md:pl-4'>
+            <Target size={18} className="md:w-5 md:h-5" />
+            <h2 className='text-lg md:text-xl font-black uppercase italic tracking-tighter'>Select_Match_Type</h2>
         </div>
         
-        <div className='grid gap-4'>
+        <div className='grid gap-3 md:gap-4'>
           {GAME_TYPES.map((type) => {
             const Icon = type.icon;
             const isSelected = selectedType === type.id;
@@ -101,22 +101,22 @@ export default function CreateGame() {
               <button
                 key={type.id}
                 onClick={() => setSelectedType(type.id)}
-                className={`group flex items-center p-5 border-4 transition-all text-left ${
+                className={`group flex items-center p-3 md:p-5 border-4 transition-all text-left ${
                   isSelected
-                    ? 'border-black bg-black text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)]'
+                    ? 'border-black bg-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)]'
                     : 'border-black bg-white text-black hover:bg-zinc-50'
                 }`}
               >
-                <div className={`p-3 border-2 ${isSelected ? 'border-white bg-white text-black' : 'border-black bg-zinc-100'}`}>
-                  <Icon className="w-6 h-6" />
+                <div className={`p-2 md:p-3 border-2 shrink-0 ${isSelected ? 'border-white bg-white text-black' : 'border-black bg-zinc-100'}`}>
+                  <Icon className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
-                <div className='ml-5 flex-1'>
-                  <h3 className='font-black uppercase italic text-lg leading-none'>{type.name.replace(' ', '_')}</h3>
-                  <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isSelected ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                <div className='ml-3 md:ml-5 flex-1 min-w-0'>
+                  <h3 className='font-black uppercase italic text-sm md:text-lg leading-none truncate'>{type.name.replace(' ', '_')}</h3>
+                  <p className={`text-[8px] md:text-[10px] font-bold uppercase tracking-widest mt-1 truncate ${isSelected ? 'text-zinc-400' : 'text-zinc-500'}`}>
                     {type.description}
                   </p>
                 </div>
-                <span className={`text-[10px] font-black px-3 py-1 border-2 hidden md:block ${isSelected ? 'border-white text-white' : 'border-black text-black'}`}>
+                <span className={`text-[8px] md:text-[10px] font-black px-2 py-1 border-2 hidden sm:block shrink-0 ${isSelected ? 'border-white text-white' : 'border-black text-black'}`}>
                   {type.matches}
                 </span>
               </button>
@@ -126,15 +126,15 @@ export default function CreateGame() {
       </section>
 
       {/* STAKE INPUT */}
-      <section className='space-y-6'>
-        <div className='flex items-center gap-2 border-l-8 border-black pl-4'>
-            <Coins size={20} />
-            <h2 className='text-xl font-black uppercase italic tracking-tighter'>Set_Asset_Stake</h2>
+      <section className='space-y-4 md:space-y-6'>
+        <div className='flex items-center gap-2 border-l-4 md:border-l-8 border-black pl-3 md:pl-4'>
+            <Coins size={18} className="md:w-5 md:h-5" />
+            <h2 className='text-lg md:text-xl font-black uppercase italic tracking-tighter'>Set_Asset_Stake</h2>
         </div>
 
-        <div className='relative group'>
-          <div className='absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none'>
-            <Terminal size={18} className='text-black' />
+        <div className='relative'>
+          <div className='absolute inset-y-0 left-0 pl-4 md:pl-5 flex items-center pointer-events-none'>
+            <Terminal size={16} className='text-black md:w-[18px]' />
           </div>
           <input
             type='number'
@@ -143,49 +143,51 @@ export default function CreateGame() {
             value={stakeAmount}
             onChange={(e) => setStakeAmount(e.target.value)}
             placeholder='0.00'
-            className='w-full pl-14 pr-20 py-6 bg-white border-4 border-black outline-none font-mono font-black text-2xl focus:bg-zinc-50 transition-colors placeholder:text-zinc-200'
+            className='w-full pl-10 md:pl-14 pr-16 md:pr-20 py-4 md:py-6 bg-white border-4 border-black outline-none font-mono font-black text-xl md:text-2xl focus:bg-zinc-50 transition-colors placeholder:text-zinc-200'
           />
-          <div className='absolute inset-y-0 right-0 pr-6 flex items-center pointer-events-none'>
-            <span className='font-black text-lg italic'>ETH</span>
+          <div className='absolute inset-y-0 right-0 pr-4 md:pr-6 flex items-center pointer-events-none'>
+            <span className='font-black text-sm md:text-lg italic'>ETH</span>
           </div>
         </div>
         
-        <div className='flex items-center gap-2 p-3 bg-zinc-100 border-2 border-black border-dashed'>
-          <Info size={14} className="text-black" />
-          <p className='text-[9px] font-black uppercase tracking-[0.2em] text-black'>
+        <div className='flex items-start md:items-center gap-2 p-3 bg-zinc-100 border-2 border-black border-dashed'>
+          <Info size={12} className="text-black shrink-0 mt-0.5 md:mt-0" />
+          <p className='text-[8px] md:text-[9px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] text-black'>
             Condition: Value must be {">"} 0.000 ETH for protocol execution.
           </p>
         </div>
       </section>
 
       {/* ACTION BUTTON */}
-      <button
-        onClick={handleCreateGame}
-        disabled={!stakeAmount || isLoading || parseFloat(stakeAmount) <= 0}
-        className={`w-full py-8 border-4 border-black font-black uppercase tracking-[0.5em] text-sm flex items-center justify-center gap-4 transition-all shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 ${
-          !stakeAmount || parseFloat(stakeAmount) <= 0
-            ? 'bg-zinc-100 text-zinc-300 border-zinc-200 cursor-not-allowed shadow-none'
-            : 'bg-black text-white hover:bg-white hover:text-black'
-        }`}
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className='w-6 h-6 animate-spin' />
-            <span>Verifying_Order...</span>
-          </>
-        ) : (
-          <>
-            <ChevronRight className='w-6 h-6' />
-            <span>Deploy_Game_Node</span>
-          </>
-        )}
-      </button>
+      <div className='pt-2'>
+        <button
+          onClick={handleCreateGame}
+          disabled={!stakeAmount || isLoading || parseFloat(stakeAmount) <= 0}
+          className={`w-full py-5 md:py-8 border-4 border-black font-black uppercase tracking-[0.2em] md:tracking-[0.5em] text-xs md:text-sm flex items-center justify-center gap-3 md:gap-4 transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 ${
+            !stakeAmount || parseFloat(stakeAmount) <= 0
+              ? 'bg-zinc-100 text-zinc-300 border-zinc-200 cursor-not-allowed shadow-none'
+              : 'bg-black text-white hover:bg-white hover:text-black'
+          }`}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className='w-5 h-5 md:w-6 md:h-6 animate-spin' />
+              <span>Verifying...</span>
+            </>
+          ) : (
+            <>
+              <ChevronRight className='w-5 h-5 md:w-6 md:h-6' />
+              <span>Deploy_Game_Node</span>
+            </>
+          )}
+        </button>
+      </div>
 
       {/* FOOTER SCHEMATIC */}
-      <div className="pt-8 border-t-2 border-black border-dotted opacity-20 font-mono text-[8px] flex justify-between uppercase">
+      <div className="pt-6 md:pt-8 border-t-2 border-black border-dotted opacity-30 font-mono text-[7px] md:text-[8px] flex flex-wrap justify-between gap-y-2 uppercase">
         <span>[AUTH_SIG_REQUIRED]</span>
-        <span>[STAKE_LOCKED_IN_ESCROW]</span>
-        <span>[NETWORK_MAINNET_SIM]</span>
+        <span>[STAKE_LOCKED]</span>
+        <span className="hidden xs:inline">[NETWORK_SIM_v1]</span>
       </div>
     </div>
   );

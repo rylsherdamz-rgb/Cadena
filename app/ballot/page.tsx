@@ -245,8 +245,8 @@ export default function BallotPage() {
 
       <footer className="mt-20 md:mt-32 border-t border-gray-100 py-12 md:py-20 text-center px-4">
          <div className="flex justify-center gap-6 md:gap-10 mb-6 opacity-20">
-            <ShieldCheck size={20} md:size={24} />
-            <Info size={20} md:size={24} />
+            <ShieldCheck size={20}  />
+            <Info size={20} size={24} />
          </div>
          <p className="text-[8px] md:text-[9px] font-mono text-gray-300 uppercase tracking-widest mb-2">Protocol: ELECTION_v1.0.4</p>
          <p className="text-[8px] md:text-[9px] font-mono text-gray-300 uppercase tracking-widest italic break-all">{ElectionContractAddress}</p>
