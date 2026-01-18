@@ -87,29 +87,31 @@ export default function Home() {
   return (
     <div ref={containerRef} className="min-h-screen bg-white text-black pb-20 font-sans">
       <header className="border-b border-black/5 sticky top-0 z-50 bg-white/80 backdrop-blur-md">
-        <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-black flex items-center justify-center text-white font-black">P</div>
+        <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-black flex items-center justify-center text-white font-black shrink-0">P</div>
             <div>
-              <h1 className="text-xl font-black uppercase tracking-tighter italic">National Ledger</h1>
+              <h1 className="text-lg md:text-xl font-black uppercase tracking-tighter italic">National Ledger</h1>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">Mainnet Protocol v1.0</span>
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em] text-gray-400">Mainnet Protocol v1.0</span>
               </div>
             </div>
           </div>
-          <ConnectButton />
+          <div className="w-full md:w-auto flex justify-center md:justify-end scale-90 md:scale-100">
+            <ConnectButton />
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      <main className="container mx-auto px-4 md:px-6 py-8 md:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-12 md:mb-16">
           <StatBox label="Active Programs" value={Number(programCountData || 0)} icon={<Activity size={16}/>} />
           <StatBox label="Finalized Allocations" value={filteredPrograms.filter(p => p?.finalized).length} icon={<ShieldCheck size={16}/>} />
           <StatBox label="Total Network Nodes" value="13,901" icon={<div className="w-2 h-2 bg-black rounded-full"/>} />
         </div>
 
-        <div className="flex flex-col md:flex-row gap-6 mb-12 items-center">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-6 mb-8 md:mb-12 items-center">
           <div className="relative flex-1 group w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black w-4 h-4" />
             <input 
@@ -117,17 +119,17 @@ export default function Home() {
               placeholder="SEARCH PROTOCOL BY AGENCY OR NAME..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-gray-50 border-b-2 border-transparent focus:border-black outline-none transition-all uppercase text-xs font-bold tracking-widest placeholder:text-gray-300"
+              className="w-full pl-12 pr-4 py-4 bg-gray-50 border-b-2 border-transparent focus:border-black outline-none transition-all uppercase text-[10px] md:text-xs font-bold tracking-widest placeholder:text-gray-300"
             />
           </div>
           
-          <div className="flex gap-3 w-full md:w-auto">
-            <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-8 py-4 border border-black text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">
+          <div className="flex gap-3 w-full lg:w-auto">
+            <button className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 md:px-8 py-4 border border-black text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all">
               <Filter className="w-3 h-3" /> Filter
             </button>
             
             {roleInfo.role === 0 && (
-              <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-8 py-4 bg-black text-white text-[10px] font-black uppercase tracking-widest hover:invert transition-all">
+              <button className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 md:px-8 py-4 bg-black text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:invert transition-all whitespace-nowrap">
                 <Plus className="w-3 h-3" /> New Proposal
               </button>
             )}
@@ -135,13 +137,13 @@ export default function Home() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-80 border border-gray-100 animate-pulse relative overflow-hidden bg-gray-50" />
+              <div key={i} className="h-64 md:h-80 border border-gray-100 animate-pulse relative overflow-hidden bg-gray-50" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
             {filteredPrograms.map((program) => (
               <div key={program!.id} className="budget-grid-item">
                 <BudgetCard 
@@ -160,12 +162,12 @@ export default function Home() {
 
 function StatBox({ label, value, icon }) {
   return (
-    <div className="stat-card p-8 border border-gray-100 bg-white hover:border-black transition-colors group relative overflow-hidden">
+    <div className="stat-card p-6 md:p-8 border border-gray-100 bg-white hover:border-black transition-colors group relative overflow-hidden">
       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
         {icon}
       </div>
-      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-2">{label}</p>
-      <p className="text-4xl font-black italic tracking-tighter">{value}</p>
+      <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-400 mb-2">{label}</p>
+      <p className="text-3xl md:text-4xl font-black italic tracking-tighter">{value}</p>
     </div>
   );
 }
