@@ -15,21 +15,18 @@ import toast from 'react-hot-toast';
 import { gsap } from 'gsap';
 import { ShieldCheck, CheckCircle2, AlertCircle, Info, Cpu } from 'lucide-react';
 
-function BallotPage() {
+export default function BallotPage() {
   const [mounted, setMounted] = useState(false);
   const { address, isConnected } = useAccount();
   const containerRef = useRef(null);
 
-  // Voting State
   const [selectedSenators, setSelectedSenators] = useState<number[]>([]);
   const [selectedParty, setSelectedParty] = useState<number | null>(null);
 
-  // 1. Prevents Hydration Mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  /* ---------------- BLOCKCHAIN READS ---------------- */
   const { data: hasVoted } = useReadContract({
     address: ElectionContractAddress,
     abi: ELECTION_ABI,
@@ -62,7 +59,7 @@ function BallotPage() {
       const c = r.result;
       if (!c) return null;
       return {
-        id: id, // Mapping the array index as the unique ID
+        id: id,
         name: String(c[0]),
         party: String(c[1]),
         position: Number(c[2]),
@@ -73,11 +70,9 @@ function BallotPage() {
   const senators = candidates.filter((c) => c?.position === 2);
   const partyLists = candidates.filter((c) => c?.position === 3);
 
-  /* ---------------- BLOCKCHAIN WRITES ---------------- */
   const { data: hash, writeContract } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
 
-  // GSAP Animations
   useEffect(() => {
     if (mounted && !isLoading && candidates.length > 0) {
       gsap.fromTo(".ballot-item", 
@@ -116,54 +111,55 @@ function BallotPage() {
 
   return (
     <div ref={containerRef} className="min-h-screen bg-white text-black font-sans pb-40">
-      {/* HEADER */}
-      <header className="border-b-4 border-black sticky top-0 bg-white/95 backdrop-blur-sm z-50 px-6 py-6">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-3">
-             <Cpu size={24} className="animate-spin [animation-duration:3s]" />
-             <h1 className="text-xl font-black uppercase tracking-tighter italic">Consensus_Ballot_v2.1</h1>
+      <header className="border-b-4 border-black sticky top-0 bg-white/95 backdrop-blur-sm z-50 px-4 md:px-6 py-4 md:py-6">
+        <div className="container mx-auto flex justify-between items-center gap-2">
+          <div className="flex items-center gap-2 md:gap-3">
+             <Cpu size={20} className="md:w-6 md:h-6 animate-spin [animation-duration:3s]" />
+             <h1 className="text-sm md:text-xl font-black uppercase tracking-tighter italic">Consensus_Ballot_v2.1</h1>
           </div>
-          <ConnectButton />
+          <div className="scale-75 md:scale-100 origin-right">
+            <ConnectButton />
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 mt-12">
+      <main className="container mx-auto px-4 md:px-6 mt-8 md:mt-12">
         {hasVoted && (
-          <div className="mb-12 border-4 border-black p-8 bg-black text-white flex items-center gap-6">
-            <CheckCircle2 size={48} className="text-green-500" />
+          <div className="mb-8 md:mb-12 border-4 border-black p-4 md:p-8 bg-black text-white flex items-center gap-4 md:gap-6">
+            <CheckCircle2 size={32} className="md:w-12 md:h-12 text-green-500 shrink-0" />
             <div>
-              <p className="text-2xl font-black uppercase tracking-tighter">VOTE_RECORDED</p>
-              <p className="text-[10px] font-bold tracking-[0.3em] opacity-60">Your cryptographic proof is stored on the ledger.</p>
+              <p className="text-xl md:text-2xl font-black uppercase tracking-tighter">VOTE_RECORDED</p>
+              <p className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] md:tracking-[0.3em] opacity-60 uppercase">Your cryptographic proof is stored on the ledger.</p>
             </div>
           </div>
         )}
 
         {/* SENATORS */}
-        <section className="mb-24">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+        <section className="mb-16 md:mb-24">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-10 gap-4">
             <div>
-              <h2 className="text-5xl font-black uppercase tracking-tighter italic underline decoration-4">Senators</h2>
+              <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic underline decoration-4">Senators</h2>
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Provision up to 12 Nodes</p>
             </div>
-            <div className="px-6 py-2 bg-black text-white font-black text-sm uppercase italic">
+            <div className="w-full md:w-auto px-6 py-2 bg-black text-white font-black text-sm uppercase italic text-center md:text-left">
               Selected: {selectedSenators.length} / 12
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             {senators.map((c) => {
               const isActive = selectedSenators.includes(c!.id);
               return (
                 <div
                   key={c!.id}
                   onClick={() => toggleSenator(c!.id)}
-                  className={`ballot-item border-2 p-6 flex items-center gap-6 cursor-pointer transition-all duration-200 ${
+                  className={`ballot-item border-2 p-4 md:p-6 flex items-center gap-4 md:gap-6 cursor-pointer transition-all duration-200 ${
                     isActive 
-                      ? 'bg-black text-white border-black scale-[1.02] shadow-[10px_10px_0px_0px_rgba(0,0,0,0.1)]' 
+                      ? 'bg-black text-white border-black md:scale-[1.02] shadow-[10px_10px_0px_0px_rgba(0,0,0,0.1)]' 
                       : 'bg-white border-gray-100 hover:border-black'
                   } ${hasVoted ? 'opacity-30 grayscale cursor-not-allowed' : ''}`}
                 >
-                  <div className="w-16 h-16 bg-gray-100 overflow-hidden border-2 border-black/10">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-100 overflow-hidden border-2 border-black/10 shrink-0">
                     <img
                       src={`/candidateImages/${c!.name.toUpperCase().replace(/ /g, "-")}.webp`}
                       alt=""
@@ -171,11 +167,11 @@ function BallotPage() {
                       onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/150?text=CANDIDATE'; }}
                     />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-black uppercase tracking-tight leading-none mb-1">{c!.name}</p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{c!.party}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs md:text-sm font-black uppercase tracking-tight leading-none mb-1 truncate">{c!.name}</p>
+                    <p className="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{c!.party}</p>
                   </div>
-                  {isActive && <CheckCircle2 size={20} className="text-white" />}
+                  {isActive && <CheckCircle2 size={18} className="md:w-5 md:h-5 text-white shrink-0" />}
                 </div>
               );
             })}
@@ -183,26 +179,26 @@ function BallotPage() {
         </section>
 
         {/* PARTY-LIST */}
-        <section className="mb-20">
-          <div className="mb-10">
-            <h2 className="text-5xl font-black uppercase tracking-tighter italic underline decoration-4">Party-List</h2>
+        <section className="mb-16 md:mb-20">
+          <div className="mb-8 md:mb-10">
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic underline decoration-4">Party-List</h2>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Single Identity Selection</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
             {partyLists.map((c) => {
               const isActive = selectedParty === c!.id;
               return (
                 <div
                   key={c!.id}
                   onClick={() => !hasVoted && setSelectedParty(c!.id)}
-                  className={`ballot-item border-4 p-8 flex flex-col items-center text-center gap-4 cursor-pointer transition-all duration-300 ${
+                  className={`ballot-item border-2 md:border-4 p-4 md:p-8 flex flex-col items-center text-center gap-3 md:gap-4 cursor-pointer transition-all duration-300 ${
                     isActive 
-                      ? 'bg-black text-white border-black shadow-[15px_15px_0px_0px_rgba(0,0,0,1)]' 
+                      ? 'bg-black text-white border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[15px_15px_0px_0px_rgba(0,0,0,1)]' 
                       : 'bg-white border-gray-100 hover:border-black'
                   } ${hasVoted ? 'opacity-30 grayscale' : ''}`}
                 >
-                  <div className="w-20 h-20 bg-gray-50 flex items-center justify-center p-2 rounded">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 flex items-center justify-center p-2 rounded shrink-0">
                     <img
                       src={`/images/partylist/${c!.id}.png`}
                       alt={c!.name}
@@ -210,9 +206,9 @@ function BallotPage() {
                       onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/100?text=LOGO'; }}
                     />
                   </div>
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-tight leading-tight">{c!.name}</p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mt-2">{c!.party}</p>
+                  <div className="min-w-0">
+                    <p className="text-[10px] md:text-[11px] font-black uppercase tracking-tight leading-tight mb-1">{c!.name}</p>
+                    <p className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">{c!.party}</p>
                   </div>
                 </div>
               );
@@ -221,18 +217,17 @@ function BallotPage() {
         </section>
       </main>
 
-      {/* FLOATING ACTION BAR */}
       {!hasVoted && (
-        <div className="fixed bottom-0 left-0 w-full bg-white border-t-4 border-black p-6 z-[60] shadow-[0px_-10px_30px_rgba(0,0,0,0.05)]">
-          <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex gap-12">
+        <div className="fixed bottom-0 left-0 w-full bg-white border-t-4 border-black p-4 md:p-6 z-[60] shadow-[0px_-10px_30px_rgba(0,0,0,0.05)]">
+          <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+            <div className="flex justify-between w-full md:w-auto md:gap-12">
                <div>
-                  <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Senator Quota</p>
-                  <p className="text-xl font-black italic">{selectedSenators.length} / 12</p>
+                  <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase mb-1">Senator Quota</p>
+                  <p className="text-base md:text-xl font-black italic">{selectedSenators.length} / 12</p>
                </div>
                <div>
-                  <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Party-List Status</p>
-                  <p className={`text-xl font-black italic ${selectedParty !== null ? 'text-black' : 'text-red-500'}`}>
+                  <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase mb-1">Party-List Status</p>
+                  <p className={`text-base md:text-xl font-black italic ${selectedParty !== null ? 'text-black' : 'text-red-500'}`}>
                     {selectedParty !== null ? 'VALIDATED' : 'NULL'}
                   </p>
                </div>
@@ -240,7 +235,7 @@ function BallotPage() {
             <button
               onClick={submitVote}
               disabled={isConfirming || !selectedParty || selectedSenators.length === 0}
-              className="w-full md:w-auto px-20 py-5 bg-black text-white font-black uppercase tracking-[0.4em] text-sm hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-300 transition-all active:scale-95 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.2)]"
+              className="w-full md:w-auto px-6 md:px-20 py-4 md:py-5 bg-black text-white font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-xs md:text-sm hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-300 transition-all active:scale-95 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)]"
             >
               {isConfirming ? 'Finalizing Consensus...' : 'Sign and Submit Ballot'}
             </button>
@@ -248,17 +243,14 @@ function BallotPage() {
         </div>
       )}
 
-      {/* FOOTER */}
-      <footer className="mt-32 border-t border-gray-100 py-20 text-center">
-         <div className="flex justify-center gap-10 mb-6 opacity-20">
-            <ShieldCheck size={24} />
-            <Info size={24} />
+      <footer className="mt-20 md:mt-32 border-t border-gray-100 py-12 md:py-20 text-center px-4">
+         <div className="flex justify-center gap-6 md:gap-10 mb-6 opacity-20">
+            <ShieldCheck size={20} md:size={24} />
+            <Info size={20} md:size={24} />
          </div>
-         <p className="text-[9px] font-mono text-gray-300 uppercase tracking-widest mb-2">Protocol: ELECTION_v1.0.4</p>
-         <p className="text-[9px] font-mono text-gray-300 uppercase tracking-widest italic">{ElectionContractAddress}</p>
+         <p className="text-[8px] md:text-[9px] font-mono text-gray-300 uppercase tracking-widest mb-2">Protocol: ELECTION_v1.0.4</p>
+         <p className="text-[8px] md:text-[9px] font-mono text-gray-300 uppercase tracking-widest italic break-all">{ElectionContractAddress}</p>
       </footer>
     </div>
   );
 }
-
-export default dynamic(() => Promise.resolve(BallotPage), { ssr: false });
