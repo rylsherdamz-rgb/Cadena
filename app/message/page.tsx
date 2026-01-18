@@ -9,7 +9,6 @@ import { Mail, Shield, Zap, Lock, Menu } from "lucide-react";
 function MessagePage() {
   const [mounted, setMounted] = useState(false);
   
-  // Memoize session ID so it doesn't change on every re-render
   const sessionId = useMemo(() => Math.random().toString(36).substring(7).toUpperCase(), []);
 
   useEffect(() => {
@@ -20,19 +19,8 @@ function MessagePage() {
 
   return (
     <main className="min-h-screen bg-white text-black font-sans pb-10 md:pb-20">
-      {/* NAVIGATION / HEADER */}
       <nav className="border-b-4 border-black bg-white sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="bg-black text-white p-1 md:p-1.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]">
-              <Zap size={18} fill="currentColor" className="md:w-5 md:h-5" />
-            </div>
-            <h1 className="text-lg md:text-2xl font-black uppercase tracking-tighter italic whitespace-nowrap">
-              D-MSG_V1
-            </h1>
-          </div>
-          
-          {/* Scales the ConnectButton down for mobile */}
           <div className="scale-90 md:scale-100 origin-right">
             <ConnectButton showBalance={false} chainStatus="icon" />
           </div>
@@ -50,7 +38,7 @@ function MessagePage() {
             </div>
             
             <div className="border-l-4 md:border-l-8 border-black pl-4 md:pl-8 space-y-3 md:space-y-4">
-              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter leading-[0.9] italic">
+              <h2 className="text-md md:text-6xl lg:text-7xl font-black uppercase tracking-tighter leading-[0.9] italic">
                 Decentralized <br /> 
                 <span className="text-zinc-200 underline decoration-black decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">Inbox</span>
               </h2>
