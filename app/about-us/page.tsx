@@ -31,22 +31,21 @@ export default function AboutUs() {
           <div className="inline-block px-3 py-1 bg-black text-white text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] mb-6 md:mb-8">
             System_Documentation_v2.0
           </div>
-          <h1 className="text-5xl sm:text-4xl md:text-9xl font-black uppercase tracking-tighter italic leading-[0.9] md:leading-[0.8] mb-8 md:mb-12">
+          <h1 className="text-4xl sm:text-2xl md:text-9xl font-black uppercase tracking-tighter italic leading-[0.9] md:leading-[0.8] mb-8 md:mb-12">
             Trust <br className="hidden sm:block" /> 
             <span className="text-gray-300">The_Code,</span> <br className="hidden sm:block" />
             Not_The_Node.
           </h1>
           <p className="text-base md:text-2xl font-bold uppercase tracking-tight leading-tight max-w-2xl border-l-4 md:border-l-8 border-black pl-4 md:pl-8 italic">
-            Cadena_OS is a decentralized simulation environment built to test the integrity of democratic processes through immutable ledger technology.
+            Cadena is a decentralized simulation environment built to test the integrity of democratic processes through immutable ledger technology.
           </p>
         </div>
       </section>
 
-      {/* --- CORE PHILOSOPHY --- */}
       <section className="container mx-auto px-4 md:px-6 py-12 md:py-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-0 border-b-4 border-black">
         <div className="border-4 border-black p-6 md:p-10 hover:bg-black hover:text-white transition-all group">
           <ShieldCheck size={40} className="md:w-12 md:h-12 mb-6 group-hover:rotate-12 transition-transform" />
-          <h3 className="text-2xl md:text-3xl font-black uppercase italic mb-4">Immutable_Votes</h3>
+          <h3 className="text-1xl md:text-3xl font-black uppercase italic mb-4">Immutable_Votes</h3>
           <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest leading-loose opacity-60">
             Once a vote is cast on the Cadena protocol, it is etched into the blockchain. No central authority can alter, delete, or hide the selection.
           </p>
@@ -54,7 +53,7 @@ export default function AboutUs() {
 
         <div className="border-4 border-black p-6 md:p-10 bg-black text-white md:translate-y-12 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.2)] md:shadow-[15px_15px_0px_0px_rgba(0,0,0,0.2)]">
           <Cpu size={40} className="md:w-12 md:h-12 mb-6 text-gray-400" />
-          <h3 className="text-2xl md:text-3xl font-black uppercase italic mb-4">Smart_Contracts</h3>
+          <h3 className="text-xl md:text-3xl font-black uppercase italic mb-4">Smart_Contracts</h3>
           <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest leading-loose text-gray-400">
             The election logic is governed by self-executing code. Auditable by anyone, anywhere, at any time. Transparent by default.
           </p>
@@ -62,18 +61,17 @@ export default function AboutUs() {
 
         <div className="border-4 border-black p-6 md:p-10 hover:bg-black hover:text-white transition-all group">
           <Globe size={40} className="md:w-12 md:h-12 mb-6 group-hover:animate-spin" />
-          <h3 className="text-2xl md:text-3xl font-black uppercase italic mb-4">Global_Access</h3>
+          <h3 className="text-xl md:text-3xl font-black uppercase italic mb-4">Global_Access</h3>
           <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest leading-loose opacity-60">
             A borderless simulation for a borderless technology. Cadena connects users globally to a singular, synchronized state of truth.
           </p>
         </div>
       </section>
 
-      {/* --- TECHNICAL STACK --- */}
       <section className="bg-gray-50 py-16 md:py-32 overflow-hidden">
         <div className="container mx-auto px-4 md:px-6">
           <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter italic mb-12 md:mb-16 underline decoration-4 underline-offset-8">
-            Technical_Architecture
+            TechStack
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
