@@ -249,7 +249,6 @@ const GameInterface = () => {
   );
 };
 
-// Sub-components for cleaner logic
 const ResultDisplay = ({ gameDetails, userAddress }: { gameDetails: Game, userAddress?: string }) => {
     const pIndex = gameDetails.players.indexOf(userAddress as `0x${string}`);
     const myScore = Number(gameDetails.scores[pIndex]);

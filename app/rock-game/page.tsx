@@ -6,9 +6,8 @@ export default function RockPage() {
   const router = useRouter()
 
   return (
-    <div className="w-full min-h-screen px-[5%] bg-white px-6 md:px-10 py-12 flex flex-col lg:flex-row items-center justify-center gap-16 overflow-hidden">
+    <div className="w-full min-h-screen px-[5%] bg-white  md:px-10 py-12 flex flex-col lg:flex-row items-center justify-center gap-16 overflow-hidden">
       
-      {/* LEFT: CONTENT MANIFESTO */}
       <div className="w-full lg:w-1/2 text-black flex flex-col gap-8 max-w-2xl relative z-10">
         <div className="inline-block px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-[0.4em] w-fit">
           Decentralized_Conflict_Resolution
@@ -26,26 +25,17 @@ export default function RockPage() {
 
         <div className="flex flex-col sm:flex-row gap-4 mt-4">
           <button
-            onClick={() => router.push("/rock-game/create-game")}
+            onClick={() => router.push("/game")}
             className="group w-full sm:w-fit px-10 py-5 bg-black text-white font-black uppercase text-sm tracking-widest border-4 border-black hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.1)] active:translate-x-1 active:translate-y-1"
           >
-            Create_Node <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+            Get Started <ChevronRight className="group-hover:translate-x-1 transition-transform" />
           </button>
-          
-          <button
-            onClick={() => router.push("/rock-game/join-game")}
-            className="w-full sm:w-fit px-10 py-5 bg-white text-black font-black uppercase text-sm tracking-widest border-4 border-black hover:bg-zinc-100 transition-all flex items-center justify-center gap-3 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.05)] active:translate-x-1 active:translate-y-1"
-          >
-            Join_Session
-          </button>
-        </div>
+          </div>
       </div>
 
-      {/* RIGHT: SCHEMATIC VISUAL */}
       <div className="w-full lg:w-1/2 flex justify-center items-center relative">
         <div className="relative border-8 border-black p-12 bg-white shadow-[30px_30px_0px_0px_rgba(0,0,0,1)] max-w-md w-full rotate-2">
           
-          {/* Status Badge */}
           <div className="absolute -top-6 -right-6 bg-black text-white p-4 font-black italic text-xl border-4 border-white shadow-xl">
             LIVE_NET
           </div>

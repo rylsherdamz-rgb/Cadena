@@ -68,7 +68,9 @@ export default function JoinGame() {
         value: stake,
       });
     } catch (err) {
-      toast.error('UPLINK_FAILED', { id: toastId });
+      toast.error('UPLINK_F',
+    onLogs(logs) {
+      const firstLog = logs[AILED', { id: toastId });
     }
   };
 
