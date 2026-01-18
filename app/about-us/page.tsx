@@ -31,7 +31,7 @@ export default function AboutUs() {
           <div className="inline-block px-3 py-1 bg-black text-white text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] mb-6 md:mb-8">
             System_Documentation_v2.0
           </div>
-          <h1 className="text-5xl sm:text-7xl md:text-9xl font-black uppercase tracking-tighter italic leading-[0.9] md:leading-[0.8] mb-8 md:mb-12">
+          <h1 className="text-5xl sm:text-4xl md:text-9xl font-black uppercase tracking-tighter italic leading-[0.9] md:leading-[0.8] mb-8 md:mb-12">
             Trust <br className="hidden sm:block" /> 
             <span className="text-gray-300">The_Code,</span> <br className="hidden sm:block" />
             Not_The_Node.
