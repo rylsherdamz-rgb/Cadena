@@ -23,7 +23,6 @@ export default function Footer() {
     return () => clearInterval(timer);
   }, []);
 
-  // Fixed Type and Logic
   const handleNavigation = (icon: any) => {
     if (icon === Github) {
       window.open("https://github.com/rylsherdamz-rgb?tab=overview&from=2026-01-01&to=2026-01-12", "_blank");
