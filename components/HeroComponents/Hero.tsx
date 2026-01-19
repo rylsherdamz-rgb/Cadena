@@ -34,10 +34,8 @@ export default function Hero() {
       ref={containerRef} 
       className="relative w-full min-h-[100dvh] bg-black text-white overflow-hidden flex flex-col items-center justify-center px-6 py-12"
     >
-      {/* Background Grid - Fixed for better mobile performance */}
       <div className="absolute inset-0 opacity-20 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:30px_30px] md:bg-[size:40px_40px]"></div>
 
-      {/* Central Visual Element */}
       <div 
         ref={visualRef}
         className="hero-title mb-8 md:mb-12 w-48 h-48 md:w-64 md:h-64 border border-white/20 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.05)] shrink-0"
@@ -47,7 +45,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Text Content */}
       <div className="text-center z-10 w-full max-w-5xl">
         <h1 className="hero-title text-2xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-tighter mb-6 leading-none break-words uppercase">
           DECENTRALIZED <br className="hidden sm:block" /> 
@@ -59,7 +56,6 @@ export default function Hero() {
           From games to national governance.
         </p>
 
-        {/* Feature Grid: 2 columns on mobile, 4 on desktop */}
         <div className="hero-title grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-4 border-t border-white/10 pt-10">
           <FeatureItem title="Game" desc="Rock Paper Scissors" />
           <FeatureItem title="Social" desc="Encrypted Messaging" />
@@ -68,7 +64,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Primary Action */}
       <button className="hero-title mt-12 md:mt-16 w-full sm:w-auto px-12 py-5 bg-white text-black font-bold uppercase tracking-[0.2em] hover:bg-gray-200 active:scale-95 transition-all text-sm">
         Enter Protocol
       </button>
