@@ -35,7 +35,6 @@ export default function Footer() {
     <footer className="w-full text-black bg-white border-t-8 border-black pt-12 md:pt-16 pb-8 px-4 sm:px-6 md:px-10 overflow-hidden">
       <div className="container mx-auto">
         
-        {/* TOP SECTION */}
         <div className="flex flex-col lg:flex-row justify-between items-start gap-10 mb-16 md:mb-20">
           <div className="space-y-6 max-w-xl">
             <div className="flex items-center gap-3">
@@ -76,9 +75,7 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="font-black uppercase text-sm italic border-b-4 border-black w-fit pr-6 text-black">Protocols</h3>
             <ul className="space-y-3 text-[11px] font-black uppercase tracking-widest text-zinc-800">
-              <li className="hover:translate-x-1 cursor-pointer flex items-center gap-2 transition-all">Budget_Gov <ExternalLink size={12}/></li>
-              <li className="hover:translate-x-1 cursor-pointer flex items-center gap-2 transition-all">Voting_Node <ExternalLink size={12}/></li>
-              <li className="hover:translate-x-1 cursor-pointer transition-all">Transparency_API</li>
+              <li className="hover:translate-x-1 cursor-pointer transition-all">Etherium Sepolia TestNet</li>
             </ul>
           </div>
 
