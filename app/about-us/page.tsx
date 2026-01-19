@@ -24,7 +24,7 @@ export default function AboutUs() {
   if (!mounted) return <div className="min-h-screen bg-white" />;
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans pb-20 md:pb-40">
+    <div className="min-h-screen bg-white text-black font-sans pb-20 md:pb-40 px-[5%]">
       
       <section className="container mx-auto px-4 md:px-6 pt-16 md:pt-24 pb-12 md:pb-16 border-b-8 border-black">
         <div className="max-w-4xl">
