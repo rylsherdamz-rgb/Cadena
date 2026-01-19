@@ -7,6 +7,8 @@ import { Providers } from "./providers" // <-- client wrapper
 import { Toaster } from "react-hot-toast";
 import Footer from "@/components/Footer"
 
+export const dynamic = 'force-dynamic';
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
