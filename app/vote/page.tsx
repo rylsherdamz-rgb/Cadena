@@ -16,7 +16,6 @@ function OnboardingPage() {
     setMounted(true);
   }, []);
 
-  /* ---------------- FETCH TOTAL CANDIDATES ---------------- */
   const { data: countData } = useReadContract({
     address: ElectionContractAddress,
     abi: ELECTION_ABI,
@@ -25,7 +24,6 @@ function OnboardingPage() {
 
   const count = Number(countData ?? 0);
 
-  /* ---------------- FETCH ALL CANDIDATES ---------------- */
   const { data: candidatesRaw, isLoading } = useReadContracts({
     contracts: Array.from({ length: count }, (_, id) => ({
       address: ElectionContractAddress,
@@ -58,20 +56,12 @@ function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white overflow-x-hidden">
-      {/* ---------------- HEADER ---------------- */}
       <header className="px-4 md:px-8 py-6 md:py-8 border-b-4 border-black sticky top-0 bg-white/90 backdrop-blur-md z-50 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-3 self-start sm:self-auto">
-          <Cpu className="w-6 h-6 md:w-8 md:h-8" />
-          <h1 className="text-xl md:text-3xl font-black uppercase tracking-tighter italic leading-none">
-            Consensus <br className="hidden sm:block" /> <span className="text-gray-400">2025_Simulation</span>
-          </h1>
-        </div>
         <div className="w-full sm:w-auto flex justify-end">
           <ConnectButton showBalance={false} accountStatus="address" chainStatus="icon" />
         </div>
       </header>
 
-      {/* ---------------- HERO SECTION ---------------- */}
       <main className="container mx-auto px-4 md:px-6 py-12 md:py-24 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
         <div className="flex-1 space-y-6 md:space-y-8 text-left">
           <div className="inline-block px-3 py-1 bg-black text-white text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">
@@ -116,11 +106,10 @@ function OnboardingPage() {
         </div>
       </main>
 
-      {/* ---------------- LIVE CANDIDATE COUNT ---------------- */}
       <section className="py-16 md:py-24 bg-gray-50 border-t-4 border-black">
         <div className="container mx-auto px-4 md:px-6">
           <div className="mb-12 md:mb-16 border-l-4 md:border-l-8 border-black pl-4 md:pl-8">
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic">Live_Aggregation</h2>
+            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter italic">Live_Vote</h2>
             <p className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-[0.2em] md:tracking-[0.4em] mt-2">Real-time Node Status</p>
           </div>
 

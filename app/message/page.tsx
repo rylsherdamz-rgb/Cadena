@@ -20,18 +20,16 @@ function MessagePage() {
   return (
     <main className="min-h-screen bg-white text-black font-sans pb-10 md:pb-20">
       <nav className="border-b-4 border-black bg-white sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <div className="scale-90 md:scale-100 origin-right">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-end">
+          <div className="scale-90 md:scale-100  origin-right">
             <ConnectButton showBalance={false} chainStatus="icon" />
           </div>
         </div>
       </nav>
 
-      {/* MAIN CONTENT AREA */}
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-16">
         <div className="grid grid-cols-1 gap-8 md:gap-12">
           
-          {/* HERO SECTION */}
           <section className="relative overflow-hidden md:overflow-visible py-4">
             <div className="absolute -top-6 -left-6 md:-top-10 md:-left-10 opacity-[0.03] pointer-events-none">
               <Mail size={150} className="md:w-[300px] md:h-[300px]" />
@@ -47,7 +45,6 @@ function MessagePage() {
               </p>
             </div>
 
-            {/* STATUS BADGES - Wrap on small screens */}
             <div className="flex flex-wrap gap-2 md:gap-4 mt-6 md:mt-8">
               <div className="flex items-center gap-2 px-2 md:px-3 py-1 bg-black text-white text-[8px] md:text-[10px] font-black uppercase tracking-widest">
                 <Shield size={10} className="md:w-3 md:h-3" /> Encrypted

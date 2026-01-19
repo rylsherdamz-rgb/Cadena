@@ -112,11 +112,7 @@ export default function BallotPage() {
   return (
     <div ref={containerRef} className="min-h-screen bg-white text-black font-sans pb-40">
       <header className="border-b-4 border-black sticky top-0 bg-white/95 backdrop-blur-sm z-50 px-4 md:px-6 py-4 md:py-6">
-        <div className="container mx-auto flex justify-between items-center gap-2">
-          <div className="flex items-center gap-2 md:gap-3">
-             <Cpu size={20} className="md:w-6 md:h-6 animate-spin [animation-duration:3s]" />
-             <h1 className="text-sm md:text-xl font-black uppercase tracking-tighter italic">Consensus_Ballot_v2.1</h1>
-          </div>
+        <div className="container mx-auto flex justify-end items-center gap-2">
           <div className="scale-75 md:scale-100 origin-right">
             <ConnectButton />
           </div>
@@ -124,7 +120,7 @@ export default function BallotPage() {
       </header>
 
       <main className="container mx-auto px-4 md:px-6 mt-8 md:mt-12">
-        {hasVoted && (
+        {hasVoted as boolean && (
           <div className="mb-8 md:mb-12 border-4 border-black p-4 md:p-8 bg-black text-white flex items-center gap-4 md:gap-6">
             <CheckCircle2 size={32} className="md:w-12 md:h-12 text-green-500 shrink-0" />
             <div>
@@ -134,7 +130,6 @@ export default function BallotPage() {
           </div>
         )}
 
-        {/* SENATORS */}
         <section className="mb-16 md:mb-24">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-10 gap-4">
             <div>
@@ -178,7 +173,6 @@ export default function BallotPage() {
           </div>
         </section>
 
-        {/* PARTY-LIST */}
         <section className="mb-16 md:mb-20">
           <div className="mb-8 md:mb-10">
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic underline decoration-4">Party-List</h2>
