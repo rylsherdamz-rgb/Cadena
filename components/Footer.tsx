@@ -3,16 +3,17 @@
 import { useState, useEffect } from "react";
 import { 
   Github, 
-  Twitter, 
   Cpu, 
   Terminal, 
   ShieldCheck, 
   ExternalLink,
   Globe,
-  Mail
+  Send
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Footer() {
+  const router = useRouter();
   const [time, setTime] = useState("");
 
   useEffect(() => {
@@ -22,11 +23,20 @@ export default function Footer() {
     return () => clearInterval(timer);
   }, []);
 
+  // Fixed Type and Logic
+  const handleNavigation = (icon: any) => {
+    if (icon === Github) {
+      window.open("https://github.com/rylsherdamz-rgb?tab=overview&from=2026-01-01&to=2026-01-12", "_blank");
+    } else if (icon === Globe) {
+      window.open("https://richie-christian-de-guzman.vercel.app/", "_blank");
+    }
+  };
+
   return (
-    <footer className="w-full text-black bg-white border-t-8 border-black pt-12 md:pt-16 pb-8 px-4 sm:px-6 md:px-10">
+    <footer className="w-full text-black bg-white border-t-8 border-black pt-12 md:pt-16 pb-8 px-4 sm:px-6 md:px-10 overflow-hidden">
       <div className="container mx-auto">
         
-        {/* TOP SECTION: Logo and Terminal */}
+        {/* TOP SECTION */}
         <div className="flex flex-col lg:flex-row justify-between items-start gap-10 mb-16 md:mb-20">
           <div className="space-y-6 max-w-xl">
             <div className="flex items-center gap-3">
@@ -43,7 +53,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* STATUS TERMINAL - Width adjusted for mobile */}
+          {/* STATUS TERMINAL */}
           <div className="w-full lg:max-w-sm border-4 border-black p-5 bg-zinc-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="flex justify-between border-b-2 border-black pb-2 mb-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-black italic underline">System_Status</span>
@@ -61,8 +71,8 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* MIDDLE SECTION: Links and Newsletter */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-16 md:mb-20">
+        {/* MIDDLE SECTION */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 md:mb-20">
           {/* Protocols */}
           <div className="space-y-4">
             <h3 className="font-black uppercase text-sm italic border-b-4 border-black w-fit pr-6 text-black">Protocols</h3>
@@ -77,34 +87,35 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="font-black uppercase text-sm italic border-b-4 border-black w-fit pr-6 text-black">Socials</h3>
             <div className="flex flex-wrap gap-3">
-              {[Twitter, Github, Globe].map((Icon, idx) => (
-                <div key={idx} className="p-3 border-2 border-black bg-white hover:bg-black hover:text-white transition-all cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-1 active:translate-y-1">
+              {[Github, Globe].map((Icon, idx) => (
+                <button 
+                  key={idx} 
+                  onClick={() => handleNavigation(Icon)}
+                  className="p-3 border-2 border-black bg-white hover:bg-black hover:text-white transition-all cursor-pointer shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:translate-x-0.5 active:translate-y-0.5"
+                >
                   <Icon size={18} />
-                </div>
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Newsletter - Visible on all screens, but stacks input on smallest mobile */}
-          <div className="col-span-1 sm:col-span-2 border-t-4 sm:border-t-0 sm:border-l-4 border-black pt-10 sm:pt-0 sm:pl-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Mail size={16} />
-              <h3 className="font-black uppercase text-sm italic text-black">Newsletter_Node</h3>
-            </div>
-            <div className="flex flex-col xs:flex-row gap-0 group">
+          {/* Newsletter (Added for layout completeness) */}
+          <div className="sm:col-span-2 space-y-4">
+            <h3 className="font-black uppercase text-sm italic border-b-4 border-black w-fit pr-6 text-black">Newsletter_Node</h3>
+            <div className="flex w-full max-w-sm">
               <input 
                 type="email" 
-                placeholder="USER@NETWORK.COM" 
-                className="bg-zinc-100 border-2 border-black px-4 py-3 text-xs font-black focus:bg-white focus:outline-none w-full placeholder:text-zinc-400 text-black min-w-0"
+                placeholder="USER@PROTOCOL.COM"
+                className="flex-1 bg-zinc-100 border-2 border-black p-3 text-[10px] font-black uppercase placeholder:text-zinc-400 focus:outline-none"
               />
-              <button className="bg-black text-white px-6 py-3 text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all border-2 border-black border-t-0 xs:border-t-2 xs:border-l-0">
-                Subscribe
+              <button className="bg-black text-white px-4 border-y-2 border-r-2 border-black hover:bg-zinc-800 transition-colors">
+                <Send size={16} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* BOTTOM SECTION: Badges and Legal */}
+        {/* BOTTOM BAR */}
         <div className="border-t-4 border-black pt-8 flex flex-col lg:flex-row justify-between items-center gap-8">
           <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-black text-center lg:text-left order-2 lg:order-1">
             © 2026 CADENA <span className="hidden sm:inline">NO_RIGHTS_RESERVED.</span> OPEN_SOURCE_ALWAYS.

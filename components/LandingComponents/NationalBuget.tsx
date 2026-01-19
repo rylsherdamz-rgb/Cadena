@@ -85,8 +85,8 @@ export default function NationalBudgetShowcase() {
               <div className="flex items-baseline gap-1 md:gap-2">
                 <span className="text-2xl md:text-4xl font-black">$</span>
                 {/* Fixed width/wrap issues by adjusting font size on mobile */}
-                <span className="amount-display text-4xl sm:text-lg px-[5%] md:text-6xl font-black tracking-tighter">
-                  850000
+                <span className="amount-display text-4xl sm:text-3xl px-[5%] md:text-6xl font-black tracking-tighter">
+                  850000000
                 </span>
               </div>
             </div>
