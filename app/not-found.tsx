@@ -12,7 +12,6 @@ export default function NotFound() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Glitch effect for the 404 text
       gsap.to(glitchRef.current, {
         skewX: 20,
         duration: 0.1,
@@ -22,7 +21,6 @@ export default function NotFound() {
         repeatDelay: 2
       })
 
-      // Staggered entry for UI elements
       gsap.from(".error-element", {
         opacity: 0,
         y: 30,
