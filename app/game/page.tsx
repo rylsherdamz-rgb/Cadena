@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import {ConnectionButton} from "@rainbow-me/rainbowkit"
+import {ConnectButton} from "@rainbow-me/rainbowkit"
 import { Plus, Users, History as HistoryIcon, Gamepad2 } from 'lucide-react';
 
 import CreateGame from '../rock-game/create-game/page';
@@ -45,7 +45,7 @@ export default function GamePage() {
       
       <div className="px-4 md:px-5 py-8 md:py-10 border-b-4 border-black mb-6 md:mb-10">
         <div className="flex justidy-end">
-          <ConnectionButton />
+          <ConnectButton />
         </div>
         <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2">
            <Gamepad2 size={32} className="text-black shrink-0" />
