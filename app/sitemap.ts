@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://cadena-ml7gqzvo1-rylsherdamzs-projects.vercel.app'
+  const baseUrl = 'https://cadena-two.vercel.app'
 
   return [
     {
@@ -11,19 +11,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${baseUrl}/cadena`, // Your "Get Started" / Onboarding path
+      url: `${baseUrl}/cadena`, 
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/game`, // Fiscal Protocol / National Budget
+      url: `${baseUrl}/game`, 
       lastModified: new Date(),
-      changeFrequency: 'always', // Since this is a "live" ledger
+      changeFrequency: 'always', 
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/vote`, // Voting_Node / Governance
+      url: `${baseUrl}/vote`, 
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
