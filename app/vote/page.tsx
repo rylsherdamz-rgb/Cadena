@@ -120,7 +120,6 @@ function OnboardingPage() {
             </div>
           ) : (
             <>
-              {/* Senators Grid */}
               <div className="mb-16 md:mb-20">
                 <h3 className="text-lg md:text-xl font-black uppercase italic mb-6 md:mb-8 flex items-center gap-2">
                   <span className="w-6 md:w-10 h-1 bg-black" /> Top_Senator_Nodes

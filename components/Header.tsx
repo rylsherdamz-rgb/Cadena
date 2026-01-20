@@ -59,10 +59,7 @@ export default function Header() {
           >
             Get Started
           </button>
-          <button className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 border-2 border-black text-black font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all text-sm md:text-base">
-            The Protocol
-          </button>
-        </div>
+       </div>
 
         <div className="hero-content grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 pt-8 border-t border-gray-100">
           <div>
