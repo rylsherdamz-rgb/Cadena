@@ -44,7 +44,7 @@ export default function GamePage() {
     <div className="bg-white w-full min-h-screen pb-10 md:pb-20">
       
       <div className="px-4 md:px-5 py-8 md:py-10 border-b-4 border-black mb-6 md:mb-10">
-        <div className="flex justidy-end">
+        <div className="flex justify-end">
           <ConnectButton />
         </div>
         <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2">
@@ -54,7 +54,6 @@ export default function GamePage() {
         <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-zinc-400">Protocol: Rock_Paper_Scissors_v1.0</p>
       </div>
 
-      {/* TABS CONTAINER */}
       <div className="px-4 md:px-5 mb-8 md:mb-12">
         <div className="flex flex-col md:flex-row gap-3 md:gap-4">
           {tabButton('create', 'Create Game', Plus)}

@@ -90,7 +90,7 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
           <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
             <div className="w-8 h-8 md:w-10 md:h-10 bg-black flex items-center justify-center text-white font-black shrink-0">P</div>
-            <div>
+            <div className="">
               <h1 className="text-lg md:text-xl font-black uppercase tracking-tighter italic">National Ledger</h1>
               <div className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
@@ -98,7 +98,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="w-full md:w-auto flex justify-center md:justify-end scale-90 md:scale-100">
+          <div className="w-full md:w-auto flex justify-start md:justify-end scale-90 md:scale-100">
             <ConnectButton />
           </div>
         </div>
