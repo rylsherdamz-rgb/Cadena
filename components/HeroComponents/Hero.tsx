@@ -63,10 +63,6 @@ export default function Hero() {
           <FeatureItem title="Economy" desc="National Budget" />
         </div>
       </div>
-
-      <button className="hero-title mt-12 md:mt-16 w-full sm:w-auto px-12 py-5 bg-white text-black font-bold uppercase tracking-[0.2em] hover:bg-gray-200 active:scale-95 transition-all text-sm">
-        Enter Protocol
-      </button>
     </div>
   );
 }
