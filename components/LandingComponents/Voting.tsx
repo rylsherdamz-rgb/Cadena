@@ -70,9 +70,7 @@ export default function ElectionShowcase() {
     if (!mounted || topSenators.length === 0) return; // Wait for data
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ repeat: -1 }) // Keep repeat if you want the whole loop, or remove for single play
-
-      // Intro Animations
+      const tl = gsap.timeline({ repeat: -1 }) 
       tl.from(".voter-card", {
         y: 30,
         opacity: 0,

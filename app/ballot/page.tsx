@@ -156,7 +156,10 @@ export default function BallotPage() {
                 >
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-100 overflow-hidden border-2 border-black/10 shrink-0">
                     <img
-                      src={`/candidateImages/${c!.name.toUpperCase().replace(/ /g, "-")}.webp`}
+    src={`/candidateImages/${c!.name
+  .trim()
+  .toUpperCase()
+  .replace(/\s+/g, "-")}.webp`}
                       alt=""
                       className={`w-full h-full object-cover ${isActive ? 'grayscale-0' : 'grayscale group-hover:grayscale-0'}`}
                       onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/150?text=CANDIDATE'; }}

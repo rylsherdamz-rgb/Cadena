@@ -1,24 +1,26 @@
 'use client';
 
 import { useMemo, useState, useEffect, useRef } from 'react';
-import dynamic from 'next/dynamic';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useReadContract, useReadContracts } from 'wagmi';
 import html2canvas from 'html2canvas';
 import { ElectionContractAddress, ELECTION_ABI } from '../../constants/ElectionContract';
-import { CheckCircle, Download, Users, BarChart3, Loader2, ShieldAlert, Cpu, Hash } from 'lucide-react';
+import { CheckCircle, Download, Hash, Loader2, ShieldAlert, Cpu } from 'lucide-react';
 
-function ReceiptPage() {
+export default function ReceiptPage() {
   const [mounted, setMounted] = useState(false);
   const { address, isConnected } = useAccount();
   const [showAllSenators, setShowAllSenators] = useState(false);
-  const receiptRef = useRef(null);
+  
+  // New state to handle download loading feedback
+  const [isDownloading, setIsDownloading] = useState(false);
+  
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  /* ---------------- BLOCKCHAIN READS ---------------- */
   const { data: hasVoted, isLoading: checkVoteLoading } = useReadContract({
     address: ElectionContractAddress,
     abi: ELECTION_ABI,
@@ -78,31 +80,43 @@ function ReceiptPage() {
 
   const votedSenators = useMemo(() => {
     if (!votedSenatorIds) return [];
-    const ids = (votedSenatorIds as bigint[]).map(id => Number(id));
-    return candidates.filter(c => c.position === 2 && ids.includes(c.id));
+    // Cast to unknown first if TS complains about BigInt mapping, or assume it's BigInt[]
+    const ids = (votedSenatorIds as unknown as bigint[]).map(id => Number(id));
+    return candidates.filter(c => c && c.position === 2 && ids.includes(c.id));
   }, [candidates, votedSenatorIds]);
 
   const votedParty = useMemo(() => {
     if (votedPartyId === undefined) return null;
-    return candidates.find(c => c.position === 3 && Number(votedPartyId) === c.id);
+    return candidates.find(c => c && c.position === 3 && Number(votedPartyId) === c.id);
   }, [candidates, votedPartyId]);
 
   const downloadReceipt = async () => {
     if (!receiptRef.current) return;
+    
+    setIsDownloading(true);
+
     try {
+      // 1. Force a small delay to ensure images are rendered and allow DOM to settle
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const canvas = await html2canvas(receiptRef.current, {
         backgroundColor: '#ffffff',
-        scale: 2,
-        useCORS: true,
+        scale: 2, // Higher resolution
+        useCORS: true, // IMPORTANT: Allows capturing images from local/external sources
         logging: false,
+        allowTaint: true,
       });
+
       const image = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement('a');
-      link.download = `VOTE-RECEIPT-${address?.slice(0, 8)}.png`;
+      link.download = `VOTE-RECEIPT-${address?.slice(0, 8) || 'Unknown'}.png`;
       link.href = image;
       link.click();
     } catch (err) {
       console.error("Capture failed:", err);
+      alert("Failed to generate receipt. Please try again.");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -146,8 +160,9 @@ function ReceiptPage() {
     );
   }
 
-  const senators = candidates.filter((c) => c.position === 2);
-  const partylists = candidates.filter((c) => c.position === 3);
+  // Type safety check before filtering
+  const senators = candidates.filter((c) => c && c.position === 2);
+  const partylists = candidates.filter((c) => c && c.position === 3);
   const displayedSenators = showAllSenators ? senators : senators.slice(0, 12);
 
   return (
@@ -194,18 +209,22 @@ function ReceiptPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {votedSenators.map((s) => (
-                <div key={s.id} className="flex items-center gap-3 md:gap-4 p-3 md:p-4 border-2 border-black bg-white">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 border border-black overflow-hidden flex-shrink-0">
+                <div key={s!.id} className="flex items-center gap-3 md:gap-4 p-3 md:p-4 border-2 border-black bg-white">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 border border-black overflow-hidden flex-shrink-0 relative">
                     <img
-                      src={`/candidateImages/${s.name.toUpperCase().replace(/ /g, "-")}.webp`}
-                      alt=""
-                      className="w-full h-full object-cover grayscale"
+                      src={`/candidateImages/${s!.name
+                        .trim()
+                        .toUpperCase()
+                        .replace(/\s+/g, "-")}.webp`}
+                      alt={s!.name}
+                      crossOrigin="anonymous" 
+                      className="w-full h-full object-cover "
                       onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/100?text=NODE'; }}
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] md:text-[11px] font-black uppercase leading-tight truncate">{s.name}</p>
-                    <p className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase italic truncate">{s.party}</p>
+                    <p className="text-[10px] md:text-[11px] font-black uppercase leading-tight truncate">{s!.name}</p>
+                    <p className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase italic truncate">{s!.party}</p>
                   </div>
                 </div>
               ))}
@@ -232,9 +251,14 @@ function ReceiptPage() {
         <div className="flex flex-col gap-4 mb-16 md:mb-24 px-2">
           <button
             onClick={downloadReceipt}
-            className="w-full py-5 md:py-6 bg-black text-white font-black uppercase text-xs md:text-sm tracking-[0.3em] md:tracking-[0.4em] hover:bg-gray-800 flex items-center justify-center gap-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)]"
+            disabled={isDownloading}
+            className={`w-full py-5 md:py-6 bg-black text-white font-black uppercase text-xs md:text-sm tracking-[0.3em] md:tracking-[0.4em] hover:bg-gray-800 flex items-center justify-center gap-3 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] transition-all ${isDownloading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            <Download size={18} /> Export_To_PNG
+            {isDownloading ? (
+               <><Loader2 className="animate-spin" size={18} /> PROCESSING_CANVAS...</>
+            ) : (
+               <><Download size={18} /> Export_To_PNG</>
+            )}
           </button>
         </div>
 
@@ -246,15 +270,16 @@ function ReceiptPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 mb-8">
             {displayedSenators.map((c) => {
-              const isMyVote = votedSenators.some(v => v.id === c.id);
+              if (!c) return null;
+              const isMyVote = votedSenators.some(v => v && v.id === c.id);
               return (
                 <div key={c.id} className={`p-5 md:p-6 border-4 relative ${isMyVote ? 'border-black bg-black text-white' : 'border-gray-100 bg-white'}`}>
                   {isMyVote && <div className="absolute -top-3 -right-3 bg-white border-2 border-black p-1 text-black"><CheckCircle size={14} /></div>}
                   <div className="flex flex-col gap-3">
                     <p className="text-[10px] font-black uppercase tracking-widest truncate">{c.name}</p>
                     <div className="flex items-baseline gap-2">
-                       <span className="text-3xl md:text-4xl font-black italic">{c.voteCount.toString()}</span>
-                       <span className="text-[8px] font-bold opacity-40 uppercase">Consensus</span>
+                        <span className="text-3xl md:text-4xl font-black italic">{c.voteCount.toString()}</span>
+                        <span className="text-[8px] font-bold opacity-40 uppercase">Consensus</span>
                     </div>
                     <div className={`h-1 w-full ${isMyVote ? 'bg-white/10' : 'bg-black/5'}`} />
                   </div>
@@ -275,6 +300,7 @@ function ReceiptPage() {
           <h3 className="text-xl md:text-2xl font-black uppercase italic mb-6 md:mb-8 border-b-4 border-black w-fit pr-6 md:pr-10 pb-2">Party-List Distribution</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             {partylists.map((c) => {
+               if (!c) return null;
               const isMyVote = votedParty?.id === c.id;
               return (
                 <div key={c.id} className={`flex flex-col sm:flex-row sm:items-center justify-between p-5 md:p-8 border-4 ${isMyVote ? 'bg-black text-white border-black' : 'border-gray-100'}`}>
@@ -291,5 +317,3 @@ function ReceiptPage() {
     </div>
   );
 }
-
-export default dynamic(() => Promise.resolve(ReceiptPage), { ssr: false });

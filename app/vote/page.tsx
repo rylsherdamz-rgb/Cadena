@@ -133,9 +133,12 @@ function OnboardingPage() {
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 border border-black overflow-hidden rounded-full shrink-0">
                           <img
-                            src={`/candidateImages/${c.name.toUpperCase().replace(/ /g, "-")}.webp`}
+  src={`/candidateImages/${c!.name
+  .trim()
+  .toUpperCase()
+  .replace(/\s+/g, "-")}.webp`}
                             alt=""
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                            className="w-full h-full object-cover "
                             onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/100?text=C'; }}
                           />
                         </div>
