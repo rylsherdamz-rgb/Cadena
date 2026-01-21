@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
-// Register ScrollTrigger
 gsap.registerPlugin(ScrollTrigger)
 
 export default function NationalBudgetShowcase() {
@@ -20,7 +19,6 @@ export default function NationalBudgetShowcase() {
         }
       })
 
-      // 1. Stagger in the budget rows
       tl.from(".budget-node", {
         scale: 0.95,
         x: -20,
@@ -30,7 +28,6 @@ export default function NationalBudgetShowcase() {
         ease: "power3.out"
       })
 
-      // 2. Animate the large number counter
       tl.from(".amount-display", {
         textContent: 0,
         duration: 2,
@@ -39,7 +36,6 @@ export default function NationalBudgetShowcase() {
         stagger: 1,
       }, "<") // Start at same time as previous
 
-      // 3. Expand the progress bars
       tl.from(".progress-fill", {
         width: "0%",
         duration: 1.5,
@@ -57,7 +53,6 @@ export default function NationalBudgetShowcase() {
       ref={containerRef} 
       className="w-full py-20 md:py-32 bg-black text-white flex flex-col items-center overflow-hidden"
     >
-      {/* Header */}
       <div className="text-center mb-12 md:mb-20 px-6 max-w-4xl">
         <h2 className="text-[10px] md:text-xs font-black tracking-[0.3em] md:tracking-[0.5em] uppercase text-gray-500 mb-3 md:mb-4">
           Fiscal Protocol
@@ -67,13 +62,10 @@ export default function NationalBudgetShowcase() {
         </h3>
       </div>
 
-      {/* Main Content Container */}
       <div className="w-full max-w-6xl px-4 md:px-6">
         
-        {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 border border-white/10 shadow-[0_0_50px_rgba(255,255,255,0.05)]">
           
-          {/* Left Column: Source Wallet */}
           <div className="p-6 md:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-white/10 flex flex-col justify-between gap-8 lg:h-[450px]">
             <div>
               <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-2">Source Wallet</p>
@@ -84,9 +76,8 @@ export default function NationalBudgetShowcase() {
               <span className="text-xs md:text-sm font-bold text-gray-400">Total Allocated</span>
               <div className="flex items-baseline gap-1 md:gap-2">
                 <span className="text-2xl md:text-4xl font-black">$</span>
-                {/* Fixed width/wrap issues by adjusting font size on mobile */}
                 <span className="amount-display text-4xl sm:text-3xl px-[5%] md:text-6xl font-black tracking-tighter">
-                  850000000
+                  8500000
                 </span>
               </div>
             </div>
