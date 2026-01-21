@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useReadContracts, useReadContract } from "wagmi"
 import { useEffect, useRef, useMemo, useState } from "react"
@@ -14,7 +14,6 @@ export default function ElectionShowcase() {
     setMounted(true);
   }, []);
 
-  // 1. Fetch Total Count
   const { data: countData } = useReadContract({
     address: ElectionContractAddress,
     abi: ELECTION_ABI,
@@ -23,7 +22,6 @@ export default function ElectionShowcase() {
 
   const count = Number(countData ?? 0);
 
-  // 2. Fetch All Candidates
   const { data: candidatesRaw, isLoading } = useReadContracts({
     contracts: Array.from({ length: count }, (_, id) => ({
       address: ElectionContractAddress,
@@ -34,7 +32,6 @@ export default function ElectionShowcase() {
     query: { enabled: count > 0 },
   });
 
-  // 3. Parse Data
   const candidates = useMemo(() => {
     if (!candidatesRaw) return [];
     return candidatesRaw.map((res: any, id: number) => {
@@ -50,24 +47,19 @@ export default function ElectionShowcase() {
     }).filter(Boolean);
   }, [candidatesRaw]);
 
-  // 4. Filter and Sort Top 3 Senators
   const topSenators = useMemo(() => {
     const senators = candidates.filter((c: any) => c.position === 2);
-    // Sort descending by voteCount (BigInt safe comparison)
     return senators
       .sort((a: any, b: any) => (b.voteCount > a.voteCount ? 1 : -1))
       .slice(0, 3);
   }, [candidates]);
 
-  // Total votes for the footer stat
   const totalVotes = useMemo(() => {
     return candidates.reduce((acc: bigint, curr: any) => acc + curr.voteCount, 0n);
   }, [candidates]);
 
-
-  // GSAP Animation Effect
   useEffect(() => {
-    if (!mounted || topSenators.length === 0) return; // Wait for data
+    if (!mounted || topSenators.length === 0) return; 
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ repeat: -1 }) 
@@ -92,16 +84,13 @@ export default function ElectionShowcase() {
         ease: "back.out(1.7)"
       })
 
-      // Number Counter Animation
-      // This grabs the 'data-end' attribute we set in the JSX below
       tl.to(".count-up", {
         innerText: (i, target) => target.getAttribute("data-end"),
-        duration: 2, // Increased duration slightly for larger numbers
+        duration: 2,
         snap: { innerText: 1 },
         ease: "power1.out"
       }, "-=0.5")
 
-      // Outro (if you keep repeat: -1)
       tl.to(containerRef.current, {
         opacity: 0,
         duration: 1,
@@ -110,7 +99,7 @@ export default function ElectionShowcase() {
     }, containerRef)
 
     return () => ctx.revert()
-  }, [mounted, topSenators]) // Re-run when topSenators data arrives
+  }, [mounted, topSenators])
 
   if (!mounted) return <div className="min-h-screen bg-white" />;
 
@@ -122,7 +111,6 @@ export default function ElectionShowcase() {
       </div>
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-10 px-6">
-        {/* Left Column: Feed (Static Mockup kept for ambience, or connect to events if available) */}
         <div className="lg:col-span-4 flex flex-col gap-4">
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Live Election Feed</p>
           <VoterAction name="Node_821" action="Verifying Block #992..." time="2s ago" />
@@ -131,7 +119,6 @@ export default function ElectionShowcase() {
           <VoterAction name="Node_112" action="Syncing Ledger..." time="15s ago" />
         </div>
 
-        {/* Right Column: Main Data */}
         <div className="lg:col-span-8 border-[10px] border-black p-8 md:p-12 flex flex-col justify-between min-h-[500px] relative">
           <div className="flex justify-between items-start">
             <div className="space-y-1">
@@ -145,26 +132,23 @@ export default function ElectionShowcase() {
             </div>
           </div>
 
-          {/* DYNAMIC STATS GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 my-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
             {isLoading && topSenators.length === 0 ? (
-               // Simple loading state
                <div className="col-span-3 text-center font-mono text-xs uppercase animate-pulse">
                  Loading Candidate Data...
                </div>
             ) : (
-              topSenators.map((senator: any) => (
+              topSenators.map((senator: any, index: number) => (
                 <StatsBox 
                   key={senator.id}
-                  label={senator.name} 
-                  // Start animation at 0, end at actual vote count
+                  rank={index + 1}
+                  name={senator.name} 
                   count="0" 
                   end={senator.voteCount.toString()} 
                 />
               ))
             )}
             
-            {/* Fallback if no data yet but loaded */}
             {!isLoading && topSenators.length === 0 && (
                <div className="col-span-3 text-center font-mono text-xs uppercase text-gray-400">
                  No votes cast yet.
@@ -182,7 +166,7 @@ export default function ElectionShowcase() {
                 <span className="text-[10px] font-black uppercase tracking-widest">Processing Global Tally</span>
               </div>
               <span className="text-[10px] font-mono text-gray-400">
-                 TOTAL VOTES: {totalVotes.toString()}
+                  TOTAL VOTES: {totalVotes.toString()}
               </span>
             </div>
           </div>
@@ -204,15 +188,30 @@ function VoterAction({ name, action, time }: { name: string, action: string, tim
   )
 }
 
-function StatsBox({ label, count, end }: { label: string, count: string, end: string }) {
+function StatsBox({ rank, name, count, end }: { rank: number, name: string, count: string, end: string }) {
   return (
-    <div className="flex flex-col border-l-4 border-black pl-6">
-      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2 truncate max-w-[150px]" title={label}>
-        {label}
-      </span>
-      <span className="count-up text-4xl font-black tracking-tighter break-all" data-end={end}>
-        {count}
-      </span>
+    <div className="flex flex-col group relative">
+      <div className="absolute -top-3 -left-3 z-10 w-8 h-8 bg-black text-white flex items-center justify-center font-black text-sm border-2 border-white shadow-md">
+        {rank}
+      </div>
+      
+      <div className="w-full aspect-square border-4 border-black mb-4 overflow-hidden bg-gray-100 relative">
+        <img 
+          src={`/candidateImages/${name.trim().toUpperCase().replace(/\s+/g, "-")}.webp`}
+          alt={name}
+          className="w-full h-full object-cover object-top hover:scale-110 transition-transform duration-500 ease-in-out"
+          onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/300?text=CANDIDATE'; }}
+        />
+      </div>
+
+      <div className="flex flex-col pl-2 border-l-4 border-black">
+        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1 truncate" title={name}>
+          {name}
+        </span>
+        <span className="count-up text-3xl font-black tracking-tighter break-all leading-none" data-end={end}>
+          {count}
+        </span>
+      </div>
     </div>
   )
 }
