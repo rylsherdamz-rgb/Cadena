@@ -95,7 +95,16 @@ export default function BallotPage() {
     }, 500)
   }
 
-  }, [mounted, isLoading, candidates.length, isConfirmed ], );
+if (hasVoted) {
+     toast.success('You Already Voted, Redirecting You to the receipt page', {
+      style: { border: '4px solid black', borderRadius: '0' 
+      })   
+    }
+    setTimeout(() => {
+      router.push(`/receipt`)
+    }, 500)
+  }
+  }, [mounted, isLoading, candidates.length, isConfirmed, hasVoted ], );
 
   const toggleSenator = (id: number) => {
     if (hasVoted) return;
@@ -103,7 +112,6 @@ export default function BallotPage() {
       prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 12 ? [...prev, id] : prev
     );
   };
-
   const submitVote = async () => {
     if (!isConnected) return toast.error('Connect wallet first');
     if (hasVoted) return toast.error('Account already registered a vote');
