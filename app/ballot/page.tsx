@@ -84,9 +84,18 @@ export default function BallotPage() {
         { opacity: 1, y: 0, stagger: 0.05, duration: 0.6, ease: "expo.out" }
       );
     }
-    
 
-  }, [mounted, isLoading, candidates.length, hasVoted], );
+    if (isConfirmed) {
+     toast.success('Vote Success', {
+      style: { border: '4px solid black', borderRadius: '0' 
+      })   
+    }
+    setTimeout(() => {
+      router.push(`/receipt`)
+    }, 500)
+  }
+
+  }, [mounted, isLoading, candidates.length, isConfirmed ], );
 
   const toggleSenator = (id: number) => {
     if (hasVoted) return;
