@@ -8,7 +8,7 @@ import { BudgetCard } from "@/components/BudgetCard";
 import { Search, Filter, Plus, ShieldCheck, Activity, X } from "lucide-react";
 import { gsap } from "gsap";
 
-export default function Cadena() {
+export default function Home() {
   const { address } = useAccount();
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -189,7 +189,7 @@ function NewProposalModal({ onClose, onSuccess }) {
   const [agency, setAgency] = useState("");
   const [amount, setAmount] = useState("");
 
-  const { writeContract, data: hash, isPending } = useWriteContract();
+  const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
 
@@ -199,10 +199,12 @@ function NewProposalModal({ onClose, onSuccess }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name || !agency || !amount) return;
+
     writeContract({
       address: NationalBudgetAddress,
       abi: NationalBudgetABI,
-      functionName: "proposeProgram",
+      functionName: "proposeBudget", // Corrected function name from ABI
       args: [name, agency, BigInt(amount)],
     });
   };
@@ -234,6 +236,11 @@ function NewProposalModal({ onClose, onSuccess }) {
             className="p-4 border-2 border-black font-bold text-xs outline-none focus:bg-gray-50"
             value={amount} onChange={(e) => setAmount(e.target.value)}
           />
+          {writeError && (
+            <p className="text-[10px] text-red-600 font-bold uppercase p-2 border border-red-200 bg-red-50">
+              Error: {writeError.message.includes("User rejected") ? "User Rejected Transaction" : "Transaction Failed"}
+            </p>
+          )}
           <button 
             disabled={isPending || isConfirming}
             type="submit" 
