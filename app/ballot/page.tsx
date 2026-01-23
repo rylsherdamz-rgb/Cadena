@@ -77,34 +77,33 @@ export default function BallotPage() {
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
 
   useEffect(() => {
-
-    if (mounted && !isLoading && candidates.length > 0) {
-      gsap.fromTo(".ballot-item", 
-        { opacity: 0, y: 20 }, 
-        { opacity: 1, y: 0, stagger: 0.05, duration: 0.6, ease: "expo.out" }
-      );
-    }
-
-    if (isConfirmed) {
-     toast.success('Vote Success', {
-      style: { border: '4px solid black', borderRadius: '0' 
-      })   
-    }
-    setTimeout(() => {
-      router.push(`/receipt`)
-    }, 500)
+  if (mounted && !isLoading && candidates.length > 0) {
+    gsap.fromTo(".ballot-item", 
+      { opacity: 0, y: 20 }, 
+      { opacity: 1, y: 0, stagger: 0.05, duration: 0.6, ease: "expo.out" }
+    );
   }
 
-if (hasVoted) {
-     toast.success('You Already Voted, Redirecting You to the receipt page', {
-      style: { border: '4px solid black', borderRadius: '0' 
-      })   
-    }
+  if (isConfirmed) {
+    toast.success('Vote Success', {
+      style: { border: '4px solid black', borderRadius: '0' }
+    });
+    
     setTimeout(() => {
-      router.push(`/receipt`)
-    }, 500)
+      router.push(`/receipt`);
+    }, 500);
   }
-  }, [mounted, isLoading, candidates.length, isConfirmed, hasVoted ], );
+
+  if (hasVoted) {
+    toast.success('You Already Voted, Redirecting You to the receipt page', {
+      style: { border: '4px solid black', borderRadius: '0' }
+    });
+
+    setTimeout(() => {
+      router.push(`/receipt`);
+    }, 500);
+  }
+}, [mounted, isLoading, candidates.length, isConfirmed, hasVoted, router]);
 
   const toggleSenator = (id: number) => {
     if (hasVoted) return;
