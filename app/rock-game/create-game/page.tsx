@@ -34,10 +34,11 @@ export default function CreateGame() {
         if (createdGameID !== undefined) {
           toast.success(`NODE_ESTABLISHED: #${createdGameID.toString()}`, { 
             style: { border: '4px solid black', borderRadius: '0', fontWeight: 'bold' } 
-          });
+          }
+          );
           setTimeout(() => {
             router.push(`/game/${createdGameID.toString()}`);
-          }, 2000);
+          }, 500);
         }
       }
     },

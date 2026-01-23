@@ -13,6 +13,7 @@ import {
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { abi, contractAddress } from '../../../constants/contractInfo';
 import GameSearchCard from '@/components/GameSearchCard';
+import {useRouter} from "next/navigation"
 import toast from 'react-hot-toast';
 import { extractErrorMessages } from '@/utils/index';
 import { Game } from '@/utils/RockContractType';
@@ -20,6 +21,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 export default function JoinGame() {
   const { data: hash, error, isPending, writeContract } = useWriteContract();
+  const router = useRouter()
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash });
 
@@ -31,7 +33,6 @@ export default function JoinGame() {
   const userAddress = account.address || undefined;
   const isTxnLoading = isPending || isConfirming;
 
-  // READ CONTRACT HOOK
   const { data: gameData, isFetching, refetch } = useReadContract({
     abi,
     address: contractAddress,
@@ -76,6 +77,12 @@ export default function JoinGame() {
     if (isConfirmed) {
       toast.success('PEER_CONNECTION_ESTABLISHED');
       setRefreshToken(Date.now().toString());
+
+      if (activeGame?.gameId) {
+        setTimeout(() => {
+          router.push(`/game/${activeGame.gameId.toString()}`)
+        }, 500)
+      }
     }
   }, [isConfirmed]);
 
@@ -87,7 +94,6 @@ export default function JoinGame() {
     }>
       <div className='space-y-12 px-[5%] py-1 bg-white w-full min-h-screen text-black'>
         
-        {/* SEARCH BAR SECTION */}
         <section className="space-y-6">
             <div className='flex items-center gap-2 border-l-8 border-black pl-4'>
                 <Radar size={20} />
@@ -119,7 +125,6 @@ export default function JoinGame() {
             </div>
         </section>
 
-        {/* RESULTS SECTION */}
         <section className='space-y-6'>
           <h2 className='text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400'>Detected_Logs</h2>
 
@@ -145,7 +150,6 @@ export default function JoinGame() {
                     />
                 </div>
                 
-                {/* Visual Metadata Decorations */}
                 <div className="mt-6 flex gap-4 overflow-hidden">
                     {[1, 2, 3, 4].map((i) => (
                         <div key={i} className="h-1 flex-1 bg-black opacity-10" />
@@ -155,7 +159,6 @@ export default function JoinGame() {
           )}
         </section>
 
-        {/* REFRESH PROTOCOL */}
         <div className="flex justify-center pt-8">
             <button 
                 onClick={() => setRefreshToken(Date.now().toString())}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import {useRouter} from "next/navigation"
 import dynamic from 'next/dynamic';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import {
@@ -15,8 +16,10 @@ import toast from 'react-hot-toast';
 import { gsap } from 'gsap';
 import { ShieldCheck, CheckCircle2, AlertCircle, Info, Cpu } from 'lucide-react';
 
+
 export default function BallotPage() {
   const [mounted, setMounted] = useState(false);
+  const router = useRouter()
   const { address, isConnected } = useAccount();
   const containerRef = useRef(null);
 
@@ -74,13 +77,16 @@ export default function BallotPage() {
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
 
   useEffect(() => {
+
     if (mounted && !isLoading && candidates.length > 0) {
       gsap.fromTo(".ballot-item", 
         { opacity: 0, y: 20 }, 
         { opacity: 1, y: 0, stagger: 0.05, duration: 0.6, ease: "expo.out" }
       );
     }
-  }, [mounted, isLoading, candidates.length]);
+    
+
+  }, [mounted, isLoading, candidates.length, hasVoted], );
 
   const toggleSenator = (id: number) => {
     if (hasVoted) return;
