@@ -1,129 +1,153 @@
-# 🗳️ Cadena - Transparent Blockchain Voting Platform
 
-Cadena is a modern, transparent election platform built on blockchain technology. It enables secure, auditable voting through smart contracts while maintaining voter privacy and preventing fraud.
+## 🧩 Cadena – Decentralized Ecosystem Platform
 
-## 🎯 Overview
+*A model based on the Cadena Bill of Senator Bam Aquino*
 
-**Problem**: Public trust in election systems has been repeatedly tested. Citizens need systems that make misuse difficult and audits immediate.
-
-**Solution**: Cadena embeds transparency into voting through:
-- ✅ On-chain vote recording
-- ✅ Real-time vote verification
-- ✅ Immutable voting records
-- ✅ Smart contract enforcement
-- ✅ Decentralized validation
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Web3 wallet (MetaMask, WalletConnect, etc.)
-
-### Installation
-
-```bash
-# Clone repository
-cd /home/richie/Projects/blockchain
-
-# Run setup script
-bash setup.sh
-
-# OR manually:
-npm install
-cd backend && npm install && cd ..
-```
-
-### Configuration
-
-1. **Create `.env.local`** in the root directory:
-```bash
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-NEXT_PUBLIC_ELECTION_CONTRACT_ADDRESS=0x...
-```
-
-2. **Deploy contract** (see Deployment section)
-
-### Development
-
-```bash
-npm run dev
-```
-
-Open http://localhost:3000
-
-## 📋 Features
-
-### Voting Interface
-- Connect Web3 wallet
-- View candidates and vote counts
-- Cast vote with blockchain confirmation
-- One-vote-per-person enforcement
-
-### Admin Dashboard
-- Add new candidates
-- Manage elections
-- View candidate list
-
-### Smart Contracts
-- **Election.sol**: Core voting contract
-- Candidate management
-- Vote casting and tallying
-- Vote verification
-
-## 📖 Documentation
-
-- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete setup instructions
-- **[Contract Docs](./backend/README.md)** - Smart contract details
-
-## 🔧 Deployment
-
-### 1. Deploy Smart Contract
-
-```bash
-cd backend
-
-# Set environment variables
-export SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
-export PRIVATE_KEY=your_private_key
-
-# Deploy
-npm run deploy
-```
-
-### 2. Update Frontend Configuration
-
-```bash
-# Copy contract address to .env.local
-NEXT_PUBLIC_ELECTION_CONTRACT_ADDRESS=0x<deployed_address>
-```
-
-### 3. Run Application
-
-```bash
-npm run dev
-```
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Next.js 16** - React framework
-- **TailwindCSS 4** - Styling
-- **Wagmi 2** - Web3 library
-- **RainbowKit** - Wallet connection
-- **React Query** - State management
-- **TypeScript** - Type safety
-
-### Backend
-- **Hardhat 2** - Development environment
-- **Solidity 0.8.20** - Smart contract language
-- **Ethers.js 6** - Contract interaction
-- **Ignition** - Deployment framework
-
-## ⚠️ Disclaimer
-
-This is a prototype/educational project. Do not use in production without professional security audit, legal review, and compliance verification.
+Live Demo: [https://cadena-two.vercel.app/](https://cadena-two.vercel.app/)
 
 ---
 
-**Built with ❤️ for transparent democracy**
+## 📖 Overview
+
+**Cadena** is a web-based decentralized ecosystem showcase inspired by the **Cadena Bill of Senator Bam Aquino**, which promotes the adoption of blockchain technology for transparency, efficiency, and citizen empowerment.
+
+This project demonstrates **four practical blockchain use cases** and explains:
+
+* how users interact with them,
+* how decentralization works in each case, and
+* how people benefit from blockchain-based systems.
+
+The platform serves as an **educational and conceptual model** of how the Cadena Bill can be implemented in real-world digital services.
+
+---
+
+## 🎯 Purpose
+
+The goal of this project is to:
+
+* Visualize how the **Cadena Bill** can be applied in digital systems
+* Educate users about blockchain-based public and private services
+* Show real benefits of decentralization such as:
+
+  * transparency
+  * security
+  * trustless transactions
+  * user ownership
+
+This project is intended for:
+
+* students
+* developers
+* policymakers
+* blockchain learners
+
+---
+
+## 🔗 Use Cases Demonstrated
+
+The platform presents **four blockchain use cases** aligned with the Cadena Bill’s vision of a decentralized ecosystem:
+
+1. **Decentralized Identity**
+   Users manage their own digital identity without relying on a central authority.
+
+2. **Tokenized Assets**
+   Digital representation of ownership for assets such as documents, property, or digital goods.
+
+3. **Decentralized Finance (DeFi)**
+   Peer-to-peer financial interactions without traditional intermediaries.
+
+4. **Decentralized Governance / Services**
+   Transparent and auditable transactions for public or institutional services.
+
+Each use case explains:
+
+* what problem it solves
+* how blockchain is used
+* how users interact with it
+* what benefits users gain
+
+---
+
+## 👥 User Interaction Flow
+
+1. **Explore** – Users browse different blockchain use cases
+2. **Understand** – Each section explains the role of decentralization
+3. **Interact** – Users see how blockchain systems are used
+4. **Benefit** – Users learn what value they gain (security, ownership, trust)
+
+This mirrors the Cadena Bill’s objective of making blockchain accessible and understandable.
+
+---
+
+## 🏗 Project Structure
+
+```
+cadena-two/
+├── public/          # Static assets
+├── src/
+│   ├── components/  # UI components
+│   ├── pages/       # Application pages
+│   ├── styles/      # Styling
+│   └── utils/       # Helper functions
+├── package.json
+├── README.md
+└── vercel.json
+```
+
+---
+
+## 🛠 Technologies Used
+
+* **Next.js / React** – Frontend framework
+* **Tailwind CSS** – Styling
+* **Vercel** – Deployment
+* **Web3 Concepts** – Blockchain use case modeling
+
+---
+
+## 🧠 Benefits of the System
+
+| Feature          | Benefit                             |
+| ---------------- | ----------------------------------- |
+| Decentralization | No single point of failure          |
+| Transparency     | Transactions are verifiable         |
+| Security         | Data is cryptographically protected |
+| User Ownership   | Users control their assets and data |
+
+---
+
+## 🚀 Getting Started
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Run locally
+
+```bash
+npm run dev
+```
+
+Open:
+
+```
+http://localhost:3000
+```
+
+---
+
+## ⚖️ Disclaimer
+
+This project is a **conceptual and educational model** inspired by the Cadena Bill of Senator Bam Aquino.
+It is not an official government system and does not represent an official implementation of the bill.
+
+---
+
+## 📜 License
+
+MIT License
+
+---
+
